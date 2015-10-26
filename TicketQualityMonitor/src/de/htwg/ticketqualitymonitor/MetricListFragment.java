@@ -13,12 +13,12 @@ import de.htwg.ticketqualitymonitor.dummy.DummyContent;
  * A list fragment representing a list of metrics. This fragment also supports
  * tablet devices by allowing list items to be given an 'activated' state upon
  * selection. This helps indicate which item is currently being viewed in a
- * {@link metricDetailFragment}.
+ * {@link MetricDetailFragment}.
  * <p>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class metricListFragment extends ListFragment {
+public class MetricListFragment extends ListFragment {
 
 	/**
 	 * The serialization (saved instance state) Bundle key representing the
@@ -63,7 +63,7 @@ public class metricListFragment extends ListFragment {
 	 * Mandatory empty constructor for the fragment manager to instantiate the
 	 * fragment (e.g. upon screen orientation changes).
 	 */
-	public metricListFragment() {
+	public MetricListFragment() {
 	}
 
 	@Override

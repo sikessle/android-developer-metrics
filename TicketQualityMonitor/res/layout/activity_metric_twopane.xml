@@ -8,7 +8,7 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
-    tools:context="de.htwg.ticketqualitymonitor.metricListActivity" >
+    tools:context="de.htwg.ticketqualitymonitor.MetricListActivity" >
 
     <!--
     This layout is a two-pane layout for the metrics
@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/metric_list"
-        android:name="de.htwg.ticketqualitymonitor.metricListFragment"
+        android:name="de.htwg.ticketqualitymonitor.MetricListFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

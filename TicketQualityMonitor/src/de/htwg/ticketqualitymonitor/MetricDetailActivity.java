@@ -9,12 +9,12 @@ import android.view.MenuItem;
 /**
  * An activity representing a single metric detail screen. This activity is only
  * used on handset devices. On tablet-size devices, item details are presented
- * side-by-side with a list of items in a {@link metricListActivity}.
+ * side-by-side with a list of items in a {@link MetricListActivity}.
  * <p>
  * This activity is mostly just a 'shell' activity containing nothing more than
- * a {@link metricDetailFragment}.
+ * a {@link MetricDetailFragment}.
  */
-public class metricDetailActivity extends Activity {
+public class MetricDetailActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +37,9 @@ public class metricDetailActivity extends Activity {
 			// Create the detail fragment and add it to the activity
 			// using a fragment transaction.
 			Bundle arguments = new Bundle();
-			arguments.putString(metricDetailFragment.ARG_ITEM_ID, getIntent()
-					.getStringExtra(metricDetailFragment.ARG_ITEM_ID));
-			metricDetailFragment fragment = new metricDetailFragment();
+			arguments.putString(MetricDetailFragment.ARG_ITEM_ID, getIntent()
+					.getStringExtra(MetricDetailFragment.ARG_ITEM_ID));
+			MetricDetailFragment fragment = new MetricDetailFragment();
 			fragment.setArguments(arguments);
 			getFragmentManager().beginTransaction()
 					.add(R.id.metric_detail_container, fragment).commit();
@@ -56,7 +56,7 @@ public class metricDetailActivity extends Activity {
 			//
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
-			navigateUpTo(new Intent(this, metricListActivity.class));
+			navigateUpTo(new Intent(this, MetricListActivity.class));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

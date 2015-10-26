@@ -11,10 +11,10 @@ import de.htwg.ticketqualitymonitor.dummy.DummyContent;
 
 /**
  * A fragment representing a single metric detail screen. This fragment is
- * either contained in a {@link metricListActivity} in two-pane mode (on
- * tablets) or a {@link metricDetailActivity} on handsets.
+ * either contained in a {@link MetricListActivity} in two-pane mode (on
+ * tablets) or a {@link MetricDetailActivity} on handsets.
  */
-public class metricDetailFragment extends Fragment {
+public class MetricDetailFragment extends Fragment {
 	/**
 	 * The fragment argument representing the item ID that this fragment
 	 * represents.
@@ -30,7 +30,7 @@ public class metricDetailFragment extends Fragment {
 	 * Mandatory empty constructor for the fragment manager to instantiate the
 	 * fragment (e.g. upon screen orientation changes).
 	 */
-	public metricDetailFragment() {
+	public MetricDetailFragment() {
 	}
 
 	@Override
