@@ -23,12 +23,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".metricDetailActivity"
+            android:name=".MetricDetailActivity"
             android:label="@string/title_metric_detail"
             android:parentActivityName=".MetricListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.htwg.ticketqualitymonitor.metricListActivity" />
+                android:value="de.htwg.ticketqualitymonitor.MetricListActivity" />
         </activity>
     </application>
 
