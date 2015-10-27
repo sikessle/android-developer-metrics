@@ -22,7 +22,7 @@ public class MetricDetailFragment extends Fragment {
 	public static final String ARG_ITEM_ID = "item_id";
 
 	/**
-	 * The dummy content this fragment is presenting.
+	 * The content this fragment is presenting.
 	 */
 	private DummyContent.DummyItem mItem;
 
@@ -55,7 +55,7 @@ public class MetricDetailFragment extends Fragment {
 		// Show the dummy content as text in a TextView.
 		if (mItem != null) {
 			((TextView) rootView.findViewById(R.id.metric_detail))
-					.setText(mItem.content);
+			.setText(mItem.content);
 		}
 
 		return rootView;
