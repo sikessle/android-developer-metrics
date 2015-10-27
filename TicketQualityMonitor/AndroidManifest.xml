@@ -14,21 +14,13 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MetricListActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".MetricDetailActivity"
-            android:label="@string/title_metric_detail"
-            android:parentActivityName=".MetricListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.htwg.ticketqualitymonitor.MetricListActivity" />
         </activity>
     </application>
 
