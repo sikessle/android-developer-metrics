@@ -1,17 +1,34 @@
 package de.htwg.ticketqualitymonitor;
 
+import de.htwg.ticketqualitymonitor.model.JiraApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends Activity {
 
+	private JiraApi api;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		api = initFromPrefs();
+	}
+
+	private JiraApi initFromPrefs() {
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		String host = prefs.getString("jira_host", "http://localhost/");
+		String user = prefs.getString("jira_username", "admin");
+		String pass = prefs.getString("jira_password", "admin");
+
+		return new JiraApi(host, user, pass);
 	}
 
 	@Override
