@@ -27,7 +27,6 @@ OnSharedPreferenceChangeListener {
 	}
 
 	private void initApiFromPrefs() {
-
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		String host = prefs.getString("jira_host", "http://localhost/");
