@@ -1,0 +1,18 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/preference_heading" >
+        <EditTextPreference
+            android:key="jira_host"
+            android:summary="@string/preference_summary_uri"
+            android:title="@string/preference_title_uri" android:defaultValue="@string/preference_default_uri"/>
+        <EditTextPreference
+            android:key="jira_username"
+            android:summary="@string/preference_summary_username"
+            android:title="@string/preference_title_username" android:defaultValue="@string/preference_default_username"/>
+        <EditTextPreference
+            android:key="jira_password"
+            android:summary="@string/preference_summary_password"
+            android:title="@string/preference_title_password" android:defaultValue="@string/preference_default_password"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>
