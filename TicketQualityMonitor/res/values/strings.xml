@@ -3,5 +3,10 @@
 
     <string name="app_name">Ticket Quality Monitor</string>
     <string name="action_settings">Settings</string>
+    <string name="settings_hint_uri">JIRA Host URI</string>
+    <string name="settings_hint_username">Username</string>
+    <string name="settings_hint_password">Password</string>
+    <string name="settings_button_save">Save Information</string>
+    <string name="settings_description">Please enter the URI of the JIRA server as well as your credentials to access the JIRA API.</string>
 
 </resources>
