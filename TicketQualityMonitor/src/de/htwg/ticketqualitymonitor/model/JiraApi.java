@@ -1,5 +1,7 @@
 package de.htwg.ticketqualitymonitor.model;
 
+import android.util.Log;
+
 public class JiraApi {
 
 	private final String URI;
@@ -10,6 +12,9 @@ public class JiraApi {
 		URI = uri;
 		USER = user;
 		PASS = pass;
+
+		Log.i(JiraApi.class.getSimpleName(), "api data: " + USER + ":" + PASS
+				+ "@" + URI);
 	}
 
 }

@@ -4,12 +4,14 @@ import de.htwg.ticketqualitymonitor.model.JiraApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements
+OnSharedPreferenceChangeListener {
 
 	private JiraApi api;
 
@@ -18,17 +20,26 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		api = initFromPrefs();
+		// Listen to preference changes
+		PreferenceManager.getDefaultSharedPreferences(this)
+		.registerOnSharedPreferenceChangeListener(this);
+		initApiFromPrefs();
 	}
 
-	private JiraApi initFromPrefs() {
+	private void initApiFromPrefs() {
+
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		String host = prefs.getString("jira_host", "http://localhost/");
 		String user = prefs.getString("jira_username", "admin");
 		String pass = prefs.getString("jira_password", "admin");
 
-		return new JiraApi(host, user, pass);
+		api = new JiraApi(host, user, pass);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+		initApiFromPrefs();
 	}
 
 	@Override
@@ -52,4 +63,5 @@ public class MainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
 }
