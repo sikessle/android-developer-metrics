@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			Intent settingsIntent = new Intent(this,
-					PreferenceActivity.class);
+					MainPreferenceActivity.class);
 			startActivity(settingsIntent);
 			return true;
 		}
