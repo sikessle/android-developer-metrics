@@ -4,23 +4,22 @@ import android.test.AndroidTestCase;
 
 public class JiraApiTest extends AndroidTestCase {
 
+	private static final String USER = "user";
+	private static final String PASS = "password";
+
 	public void testValidConstructorArgs() {
 		String uri = "http://localhost/";
-		String user = "user";
-		String pass = "password";
-		JiraApi api = new JiraApi(uri, user, pass);
+		JiraApi api = new JiraApi(uri, USER, PASS);
 
 		assertEquals(uri, api.getUri());
-		assertEquals(user, api.getUser());
-		assertEquals(pass, api.getPass());
+		assertEquals(USER, api.getUser());
+		assertEquals(PASS, api.getPass());
 	}
 
 	public void testMissingTrailingSlash() {
 		// missing trailing slash
 		String uri = "http://localhost";
-		String user = "user";
-		String pass = "password";
-		JiraApi api = new JiraApi(uri, user, pass);
+		JiraApi api = new JiraApi(uri, USER, PASS);
 
 		assertEquals(uri + "/", api.getUri());
 	}
@@ -28,9 +27,7 @@ public class JiraApiTest extends AndroidTestCase {
 	public void testMissingLeadingHttp() {
 		// missing leading http://
 		String uri = "localhost/";
-		String user = "user";
-		String pass = "password";
-		JiraApi api = new JiraApi(uri, user, pass);
+		JiraApi api = new JiraApi(uri, USER, PASS);
 
 		assertEquals("http://" + uri, api.getUri());
 	}
