@@ -49,6 +49,7 @@ public class JiraApiTest extends AndroidTestCase {
 		api.getProjects(new Listener<JiraProject[]>() {
 			@Override
 			public void onResponse(JiraProject[] projects) {
+				System.out.println(projects[0].getKey());
 				latch.countDown();
 			}
 		});

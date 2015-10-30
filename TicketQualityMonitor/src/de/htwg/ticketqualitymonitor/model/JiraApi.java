@@ -1,6 +1,11 @@
 package de.htwg.ticketqualitymonitor.model;
 
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 
 import com.android.volley.RequestQueue;
@@ -20,6 +25,7 @@ public class JiraApi {
 	private final String pass;
 	private final RequestQueue requestQueue;
 	private final ErrorListener errorListener;
+	private final Map<String, String> credentials;
 
 	public JiraApi(String uri, String user, String pass, Context context) {
 		this.uri = sanitizeUri(uri);
@@ -27,6 +33,21 @@ public class JiraApi {
 		this.pass = pass;
 		this.requestQueue = Volley.newRequestQueue(context);
 		errorListener = new MyErrorListener();
+		credentials = new HashMap<String, String>();
+		initCredentialsHeaders();
+	}
+
+	private void initCredentialsHeaders() {
+		String userPass = (user + ":" + pass);
+		String userPassBase64;
+		try {
+			userPassBase64 = Base64.encodeToString(userPass.getBytes("UTF-8"),
+					Base64.NO_WRAP);
+		} catch (UnsupportedEncodingException e) {
+			Log.e(JiraApi.class.getSimpleName(), e.getMessage());
+			throw new RuntimeException(e);
+		}
+		credentials.put("Authorization", "Basic " + userPassBase64);
 	}
 
 	private String sanitizeUri(String possibleUri) {
@@ -58,9 +79,16 @@ public class JiraApi {
 		return pass;
 	}
 
+	private <T> GsonRequest<T> getRequestWithCredentials(String resourceUri,
+			Class<T> clazz, Listener<T> listener) {
+		Map<String, String> headers = new HashMap<String, String>(credentials);
+		return new GsonRequest<T>(resourceUri, clazz, headers, listener,
+				errorListener);
+	}
+
 	public void getProjects(Listener<JiraProject[]> listener) {
-		GsonRequest<JiraProject[]> req = new GsonRequest<JiraProject[]>(uri
-				+ PROJECTS, JiraProject[].class, listener, errorListener);
+		GsonRequest<JiraProject[]> req = getRequestWithCredentials(uri
+				+ PROJECTS, JiraProject[].class, listener);
 		requestQueue.add(req);
 	}
 
