@@ -8,14 +8,14 @@ import android.content.Context;
 public class RequestQueueSingleton {
 	private static RequestQueue INSTANCE;
 
-	public static RequestQueue init(Context context) {
+	synchronized public static RequestQueue init(Context context) {
 		if (INSTANCE == null) {
 			INSTANCE = Volley.newRequestQueue(context);
 		}
 		return INSTANCE;
 	}
 
-	public static RequestQueue getInstance() {
+	synchronized public static RequestQueue getInstance() {
 		if (INSTANCE == null) {
 			throw new IllegalStateException("Call init(Context context) first");
 		}
