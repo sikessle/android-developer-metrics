@@ -32,7 +32,7 @@ public class JiraApi {
 		this.user = user;
 		this.pass = pass;
 		this.requestQueue = Volley.newRequestQueue(context);
-		errorListener = new MyErrorListener();
+		errorListener = new LogErrorListener();
 		credentials = new HashMap<String, String>();
 		initCredentialsHeaders();
 	}
@@ -79,20 +79,25 @@ public class JiraApi {
 		return pass;
 	}
 
-	private <T> GsonRequest<T> getRequestWithCredentials(String resourceUri,
+	/**
+	 * @param resource
+	 *            The resource to aquire: i.e. "project". The base uri will be
+	 *            prepended.
+	 */
+	private <T> GsonRequest<T> getRequestWithCredentials(String resource,
 			Class<T> clazz, Listener<T> listener) {
 		Map<String, String> headers = new HashMap<String, String>(credentials);
-		return new GsonRequest<T>(resourceUri, clazz, headers, listener,
+		return new GsonRequest<T>(uri + resource, clazz, headers, listener,
 				errorListener);
 	}
 
 	public void getProjects(Listener<JiraProject[]> listener) {
-		GsonRequest<JiraProject[]> req = getRequestWithCredentials(uri
-				+ PROJECTS, JiraProject[].class, listener);
+		GsonRequest<JiraProject[]> req = getRequestWithCredentials(PROJECTS,
+				JiraProject[].class, listener);
 		requestQueue.add(req);
 	}
 
-	private static class MyErrorListener implements Response.ErrorListener {
+	private static class LogErrorListener implements Response.ErrorListener {
 
 		@Override
 		public void onErrorResponse(VolleyError error) {
