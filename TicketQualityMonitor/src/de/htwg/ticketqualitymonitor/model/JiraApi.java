@@ -7,6 +7,7 @@ import android.util.Log;
 public class JiraApi {
 
 	private final String URI;
+	private static final String URI_API_SUFFIX = "rest/api/2/";
 	private final String USER;
 	private final String PASS;
 
@@ -19,18 +20,6 @@ public class JiraApi {
 
 		Log.i(JiraApi.class.getSimpleName(), "api data: " + USER + ":" + PASS
 				+ "@" + URI);
-	}
-
-	public String getUri() {
-		return URI;
-	}
-
-	public String getUser() {
-		return USER;
-	}
-
-	public String getPass() {
-		return PASS;
 	}
 
 	private String sanitizeUri(String possibleUri) {
@@ -46,7 +35,20 @@ public class JiraApi {
 			uri.append(suffix);
 		}
 
+		uri.append(URI_API_SUFFIX);
 		return uri.toString();
+	}
+
+	public String getUri() {
+		return URI;
+	}
+
+	public String getUser() {
+		return USER;
+	}
+
+	public String getPass() {
+		return PASS;
 	}
 
 }

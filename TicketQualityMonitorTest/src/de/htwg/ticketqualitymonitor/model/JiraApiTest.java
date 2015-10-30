@@ -4,14 +4,16 @@ import android.test.AndroidTestCase;
 
 public class JiraApiTest extends AndroidTestCase {
 
-	private static final String USER = "user";
-	private static final String PASS = "password";
+	private static final String URI = "http://metaproject.in.fhkn.de:8080/";
+	private static final String URI_SUFFIX = "rest/api/2/";
+	private static final String USER = "sikessle";
+	private static final String PASS = "sikessle";
 
 	public void testValidConstructorArgs() {
 		String uri = "http://localhost/";
 		JiraApi api = new JiraApi(uri, USER, PASS);
 
-		assertEquals(uri, api.getUri());
+		assertEquals(uri + URI_SUFFIX, api.getUri());
 		assertEquals(USER, api.getUser());
 		assertEquals(PASS, api.getPass());
 	}
@@ -21,7 +23,7 @@ public class JiraApiTest extends AndroidTestCase {
 		String uri = "http://localhost";
 		JiraApi api = new JiraApi(uri, USER, PASS);
 
-		assertEquals(uri + "/", api.getUri());
+		assertEquals(uri + "/" + URI_SUFFIX, api.getUri());
 	}
 
 	public void testMissingLeadingHttp() {
@@ -29,7 +31,7 @@ public class JiraApiTest extends AndroidTestCase {
 		String uri = "localhost/";
 		JiraApi api = new JiraApi(uri, USER, PASS);
 
-		assertEquals("http://" + uri, api.getUri());
+		assertEquals("http://" + uri + URI_SUFFIX, api.getUri());
 	}
 
 }
