@@ -19,7 +19,6 @@ public class JiraApiTest extends AndroidTestCase {
 	}
 
 	public void testMissingTrailingSlash() {
-		// missing trailing slash
 		String uri = "http://localhost";
 		JiraApi api = new JiraApi(uri, USER, PASS);
 
@@ -27,7 +26,6 @@ public class JiraApiTest extends AndroidTestCase {
 	}
 
 	public void testMissingLeadingHttp() {
-		// missing leading http://
 		String uri = "localhost/";
 		JiraApi api = new JiraApi(uri, USER, PASS);
 
