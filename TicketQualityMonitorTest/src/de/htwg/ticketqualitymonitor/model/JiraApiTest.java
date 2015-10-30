@@ -4,6 +4,7 @@ import java.util.concurrent.CountDownLatch;
 
 import android.test.AndroidTestCase;
 
+import com.android.volley.RequestQueue;
 import com.android.volley.Response.Listener;
 
 public class JiraApiTest extends AndroidTestCase {
@@ -12,19 +13,21 @@ public class JiraApiTest extends AndroidTestCase {
 	private static final String URI_SUFFIX = "rest/api/2/";
 	private static final String USER = "sikessle";
 	private static final String PASS = "sikessle";
+	private RequestQueue queue;
 
 	private JiraApi api;
 	private CountDownLatch latch;
 
 	@Override
 	public void setUp() throws Exception {
-		api = new JiraApi(URI, USER, PASS, getContext());
+		queue = RequestQueueSingleton.init(getContext());
+		api = new JiraApi(URI, USER, PASS, queue);
 		latch = new CountDownLatch(1);
 	}
 
 	public void testValidConstructorArgs() {
 		String uri = "http://localhost/";
-		JiraApi api = new JiraApi(uri, USER, PASS, getContext());
+		api = new JiraApi(uri, USER, PASS, queue);
 
 		assertEquals(uri + URI_SUFFIX, api.getUri());
 		assertEquals(USER, api.getUser());
@@ -33,14 +36,14 @@ public class JiraApiTest extends AndroidTestCase {
 
 	public void testMissingTrailingSlash() {
 		String uri = "http://localhost";
-		JiraApi api = new JiraApi(uri, USER, PASS, getContext());
+		api = new JiraApi(uri, USER, PASS, queue);
 
 		assertEquals(uri + "/" + URI_SUFFIX, api.getUri());
 	}
 
 	public void testMissingLeadingHttp() {
 		String uri = "localhost/";
-		JiraApi api = new JiraApi(uri, USER, PASS, getContext());
+		api = new JiraApi(uri, USER, PASS, queue);
 
 		assertEquals("http://" + uri + URI_SUFFIX, api.getUri());
 	}

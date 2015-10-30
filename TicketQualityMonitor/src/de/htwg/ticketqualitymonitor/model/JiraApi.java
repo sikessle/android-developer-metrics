@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
@@ -13,7 +12,6 @@ import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 
 public class JiraApi {
 
@@ -24,17 +22,22 @@ public class JiraApi {
 	private final String user;
 	private final String pass;
 	private final RequestQueue requestQueue;
-	private final ErrorListener errorListener;
+	private ErrorListener errorListener;
 	private final Map<String, String> credentials;
 
-	public JiraApi(String uri, String user, String pass, Context context) {
+	public JiraApi(String uri, String user, String pass,
+			RequestQueue requestQueue) {
 		this.uri = sanitizeUri(uri);
 		this.user = user;
 		this.pass = pass;
-		this.requestQueue = Volley.newRequestQueue(context);
+		this.requestQueue = requestQueue;
 		errorListener = new LogErrorListener();
 		credentials = new HashMap<String, String>();
 		initCredentialsHeaders();
+	}
+
+	public void setErrorListener(ErrorListener listener) {
+		errorListener = listener != null ? listener : errorListener;
 	}
 
 	private void initCredentialsHeaders() {

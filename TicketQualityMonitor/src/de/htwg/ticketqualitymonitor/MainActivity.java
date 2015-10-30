@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import de.htwg.ticketqualitymonitor.model.JiraApi;
+import de.htwg.ticketqualitymonitor.model.RequestQueueSingleton;
 
 public class MainActivity extends Activity implements
 OnSharedPreferenceChangeListener {
@@ -33,7 +34,7 @@ OnSharedPreferenceChangeListener {
 		String user = prefs.getString("jira_username", "admin");
 		String pass = prefs.getString("jira_password", "admin");
 
-		api = new JiraApi(host, user, pass, this);
+		api = new JiraApi(host, user, pass, RequestQueueSingleton.init(this));
 	}
 
 	@Override
