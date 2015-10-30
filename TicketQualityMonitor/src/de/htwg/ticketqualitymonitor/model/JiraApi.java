@@ -87,7 +87,7 @@ public class JiraApi {
 	 *            The resource to aquire: i.e. "project". The base uri will be
 	 *            prepended.
 	 */
-	private <T> GsonRequest<T> getRequestWithCredentials(String resource,
+	protected <T> GsonRequest<T> getRequestWithCredentials(String resource,
 			Class<T> clazz, Listener<T> listener) {
 		Map<String, String> headers = new HashMap<String, String>(credentials);
 		return new GsonRequest<T>(uri + resource, clazz, headers, listener,

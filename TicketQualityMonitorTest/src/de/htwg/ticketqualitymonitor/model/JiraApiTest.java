@@ -1,35 +1,26 @@
 package de.htwg.ticketqualitymonitor.model;
 
-import java.util.concurrent.CountDownLatch;
-
 import android.test.AndroidTestCase;
+import android.util.Base64;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response.Listener;
-
-import static org.mockito.Mockito.*;
+import com.android.volley.toolbox.Volley;
 
 public class JiraApiTest extends AndroidTestCase {
 
-	private static final String URI = "http://metaproject.in.fhkn.de:8080/";
 	private static final String URI_SUFFIX = "rest/api/2/";
-	private static final String USER = "sikessle";
-	private static final String PASS = "sikessle";
-	private RequestQueue queue;
+	private static final String USER = "user";
+	private static final String PASS = "pass";
+	private boolean listenerCalled;
 
-	private JiraApi api;
-	private CountDownLatch latch;
-
-	@Override
-	public void setUp() throws Exception {
-		queue = mock(RequestQueue.class);
-		api = new JiraApi(URI, USER, PASS, queue);
-		latch = new CountDownLatch(1);
+	private RequestQueue createQueue() {
+		return Volley.newRequestQueue(getContext());
 	}
 
 	public void testValidConstructorArgs() {
 		String uri = "http://localhost/";
-		api = new JiraApi(uri, USER, PASS, queue);
+		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
 
 		assertEquals(uri + URI_SUFFIX, api.getUri());
 		assertEquals(USER, api.getUser());
@@ -38,26 +29,59 @@ public class JiraApiTest extends AndroidTestCase {
 
 	public void testMissingTrailingSlash() {
 		String uri = "http://localhost";
-		api = new JiraApi(uri, USER, PASS, queue);
+		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
 
 		assertEquals(uri + "/" + URI_SUFFIX, api.getUri());
 	}
 
 	public void testMissingLeadingHttp() {
 		String uri = "localhost/";
-		api = new JiraApi(uri, USER, PASS, queue);
+		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
 
 		assertEquals("http://" + uri + URI_SUFFIX, api.getUri());
 	}
 
-	public void testGetProjects() throws InterruptedException {
-		api.getProjects(new Listener<JiraProject[]>() {
+	private void setListenerCalled(boolean value) {
+		listenerCalled = value;
+	}
+
+	public void testGetRequestWithCredentials() throws Exception {
+		String uri = "http://localhost/";
+		String resource = "res";
+		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
+		GsonRequest<String> request = api.getRequestWithCredentials(resource,
+				String.class, new Listener<String>() {
 			@Override
-			public void onResponse(JiraProject[] projects) {
-				System.out.println(projects[0].getKey());
-				latch.countDown();
+			public void onResponse(String res) {
 			}
 		});
-		latch.await();
+
+		String userPass = (USER + ":" + PASS);
+		String expectedCredentials = "Basic "
+				+ Base64.encodeToString(userPass.getBytes("UTF-8"),
+						Base64.NO_WRAP);
+
+		assertEquals(expectedCredentials,
+				request.getHeaders().get("Authorization"));
+		assertEquals(uri + URI_SUFFIX + resource, request.getUrl());
 	}
+
+	public void testGetRequestListener() {
+		String uri = "http://localhost/";
+		final String expectedResponse = "resp";
+		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
+		GsonRequest<String> request = api.getRequestWithCredentials("/res",
+				String.class, new Listener<String>() {
+			@Override
+			public void onResponse(String res) {
+				assertEquals(expectedResponse, res);
+				setListenerCalled(true);
+			}
+		});
+
+		setListenerCalled(false);
+		request.deliverResponse(expectedResponse);
+		assertTrue(listenerCalled);
+	}
+
 }
