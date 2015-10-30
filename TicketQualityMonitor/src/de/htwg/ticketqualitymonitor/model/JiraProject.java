@@ -5,6 +5,7 @@ public class JiraProject {
 	private String id;
 	private String key;
 	private String name;
+	private String description;
 
 	public JiraProject() {
 	}
@@ -19,6 +20,10 @@ public class JiraProject {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 }
