@@ -10,6 +10,8 @@
         android:targetSdkVersion="19"
         tools:ignore="OldTargetApi" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -24,7 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainPreferenceActivity">
+        <activity android:name=".MainPreferenceActivity" >
         </activity>
     </application>
 
