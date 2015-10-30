@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import de.htwg.ticketqualitymonitor.model.JiraApi;
 
 public class MainActivity extends Activity implements
-		OnSharedPreferenceChangeListener {
+OnSharedPreferenceChangeListener {
 
 	private JiraApi api;
 
@@ -22,7 +22,7 @@ public class MainActivity extends Activity implements
 
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
-				.registerOnSharedPreferenceChangeListener(this);
+		.registerOnSharedPreferenceChangeListener(this);
 		initApiFromPrefs();
 	}
 
@@ -33,7 +33,7 @@ public class MainActivity extends Activity implements
 		String user = prefs.getString("jira_username", "admin");
 		String pass = prefs.getString("jira_password", "admin");
 
-		api = new JiraApi(host, user, pass);
+		api = new JiraApi(host, user, pass, this);
 	}
 
 	@Override

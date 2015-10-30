@@ -1,7 +1,14 @@
 package de.htwg.ticketqualitymonitor.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.content.Context;
+import android.util.Log;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 
 public class JiraApi {
 
@@ -11,11 +18,15 @@ public class JiraApi {
 	private final String uri;
 	private final String user;
 	private final String pass;
+	private final RequestQueue requestQueue;
+	private final ErrorListener errorListener;
 
-	public JiraApi(String uri, String user, String pass) {
+	public JiraApi(String uri, String user, String pass, Context context) {
 		this.uri = sanitizeUri(uri);
 		this.user = user;
 		this.pass = pass;
+		this.requestQueue = Volley.newRequestQueue(context);
+		errorListener = new MyErrorListener();
 	}
 
 	private String sanitizeUri(String possibleUri) {
@@ -35,11 +46,6 @@ public class JiraApi {
 		return result.toString();
 	}
 
-	public List<JiraProject> getProjects() {
-		List<JiraProject> result = new ArrayList<JiraProject>();
-		return result;
-	}
-
 	public String getUri() {
 		return uri;
 	}
@@ -52,4 +58,18 @@ public class JiraApi {
 		return pass;
 	}
 
+	public void getProjects(Listener<JiraProject[]> listener) {
+		GsonRequest<JiraProject[]> req = new GsonRequest<JiraProject[]>(uri
+				+ PROJECTS, JiraProject[].class, listener, errorListener);
+		requestQueue.add(req);
+	}
+
+	private static class MyErrorListener implements Response.ErrorListener {
+
+		@Override
+		public void onErrorResponse(VolleyError error) {
+			Log.e(JiraApi.class.getSimpleName(), error.getMessage());
+		}
+
+	}
 }

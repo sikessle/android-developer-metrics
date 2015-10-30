@@ -2,14 +2,11 @@ package de.htwg.ticketqualitymonitor.model;
 
 public class JiraProject {
 
-	private final String id;
-	private final String key;
-	private final String name;
+	private String id;
+	private String key;
+	private String name;
 
-	public JiraProject(String id, String key, String name) {
-		this.id = id;
-		this.key = key;
-		this.name = name;
+	public JiraProject() {
 	}
 
 	public String getId() {

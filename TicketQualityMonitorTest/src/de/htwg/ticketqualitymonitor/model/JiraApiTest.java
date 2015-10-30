@@ -1,8 +1,10 @@
 package de.htwg.ticketqualitymonitor.model;
 
-import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import android.test.AndroidTestCase;
+
+import com.android.volley.Response.Listener;
 
 public class JiraApiTest extends AndroidTestCase {
 
@@ -12,15 +14,17 @@ public class JiraApiTest extends AndroidTestCase {
 	private static final String PASS = "sikessle";
 
 	private JiraApi api;
+	private CountDownLatch latch;
 
 	@Override
 	public void setUp() throws Exception {
-		api = new JiraApi(URI, USER, PASS);
+		api = new JiraApi(URI, USER, PASS, getContext());
+		latch = new CountDownLatch(1);
 	}
 
 	public void testValidConstructorArgs() {
 		String uri = "http://localhost/";
-		JiraApi api = new JiraApi(uri, USER, PASS);
+		JiraApi api = new JiraApi(uri, USER, PASS, getContext());
 
 		assertEquals(uri + URI_SUFFIX, api.getUri());
 		assertEquals(USER, api.getUser());
@@ -29,22 +33,25 @@ public class JiraApiTest extends AndroidTestCase {
 
 	public void testMissingTrailingSlash() {
 		String uri = "http://localhost";
-		JiraApi api = new JiraApi(uri, USER, PASS);
+		JiraApi api = new JiraApi(uri, USER, PASS, getContext());
 
 		assertEquals(uri + "/" + URI_SUFFIX, api.getUri());
 	}
 
 	public void testMissingLeadingHttp() {
 		String uri = "localhost/";
-		JiraApi api = new JiraApi(uri, USER, PASS);
+		JiraApi api = new JiraApi(uri, USER, PASS, getContext());
 
 		assertEquals("http://" + uri + URI_SUFFIX, api.getUri());
 	}
 
-	public void testGetProjects() {
-		List<JiraProject> projects = api.getProjects();
-		assertEquals(1, projects.size());
-		assertEquals("TEST", projects.get(0).getKey());
+	public void testGetProjects() throws InterruptedException {
+		api.getProjects(new Listener<JiraProject[]>() {
+			@Override
+			public void onResponse(JiraProject[] projects) {
+				latch.countDown();
+			}
+		});
+		latch.await();
 	}
-
 }
