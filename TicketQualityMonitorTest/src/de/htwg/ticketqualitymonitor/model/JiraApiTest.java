@@ -7,6 +7,8 @@ import android.test.AndroidTestCase;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response.Listener;
 
+import static org.mockito.Mockito.*;
+
 public class JiraApiTest extends AndroidTestCase {
 
 	private static final String URI = "http://metaproject.in.fhkn.de:8080/";
@@ -20,7 +22,7 @@ public class JiraApiTest extends AndroidTestCase {
 
 	@Override
 	public void setUp() throws Exception {
-		queue = RequestQueueSingleton.init(getContext());
+		queue = mock(RequestQueue.class);
 		api = new JiraApi(URI, USER, PASS, queue);
 		latch = new CountDownLatch(1);
 	}
