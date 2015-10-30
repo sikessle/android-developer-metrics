@@ -1,6 +1,5 @@
 package de.htwg.ticketqualitymonitor;
 
-import de.htwg.ticketqualitymonitor.model.JiraApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,9 +8,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import de.htwg.ticketqualitymonitor.model.JiraApi;
 
 public class MainActivity extends Activity implements
-OnSharedPreferenceChangeListener {
+		OnSharedPreferenceChangeListener {
 
 	private JiraApi api;
 
@@ -22,7 +22,7 @@ OnSharedPreferenceChangeListener {
 
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
-		.registerOnSharedPreferenceChangeListener(this);
+				.registerOnSharedPreferenceChangeListener(this);
 		initApiFromPrefs();
 	}
 

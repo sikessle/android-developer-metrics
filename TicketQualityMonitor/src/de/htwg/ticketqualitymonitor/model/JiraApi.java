@@ -1,54 +1,55 @@
 package de.htwg.ticketqualitymonitor.model;
 
-import org.json.JSONObject;
-
-import android.util.Log;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JiraApi {
 
-	private final String URI;
 	private static final String URI_API_SUFFIX = "rest/api/2/";
-	private final String USER;
-	private final String PASS;
+	private static final String PROJECTS = "project";
 
-	private static final String PROJECTS = "";
+	private final String uri;
+	private final String user;
+	private final String pass;
 
 	public JiraApi(String uri, String user, String pass) {
-		URI = sanitizeUri(uri);
-		USER = user;
-		PASS = pass;
-
-		Log.i(JiraApi.class.getSimpleName(), "api data: " + USER + ":" + PASS
-				+ "@" + URI);
+		this.uri = sanitizeUri(uri);
+		this.user = user;
+		this.pass = pass;
 	}
 
 	private String sanitizeUri(String possibleUri) {
-		final StringBuilder uri = new StringBuilder(possibleUri);
+		final StringBuilder result = new StringBuilder(possibleUri);
 		final String prefix = "http://";
 		final String suffix = "/";
 
 		if (!possibleUri.startsWith(prefix)) {
-			uri.insert(0, prefix);
+			result.insert(0, prefix);
 		}
 
 		if (!possibleUri.endsWith(suffix)) {
-			uri.append(suffix);
+			result.append(suffix);
 		}
 
-		uri.append(URI_API_SUFFIX);
-		return uri.toString();
+		result.append(URI_API_SUFFIX);
+		return result.toString();
+	}
+
+	public List<JiraProject> getProjects() {
+		List<JiraProject> result = new ArrayList<JiraProject>();
+		return result;
 	}
 
 	public String getUri() {
-		return URI;
+		return uri;
 	}
 
 	public String getUser() {
-		return USER;
+		return user;
 	}
 
 	public String getPass() {
-		return PASS;
+		return pass;
 	}
 
 }
