@@ -57,16 +57,19 @@ public class MainPreferenceActivity extends Activity {
 		}
 
 		private void initProjectList() {
-			String keyProjectList = getString(R.string.key_project);
+			final String keyProjectList = getString(R.string.key_project);
+			final String errorMessage = getString(R.string.preference_error_projects);
 			final ListPreference prefList = (ListPreference) findPreference(keyProjectList);
+			// Shows loading indicator
+			prefList.setSummary(getString(R.string.loading));
+
 			api.getProjects(new ProjectsListener(prefList),
-					new ProjectsErrorListener());
+					new ProjectsErrorListener(prefList, errorMessage));
 		}
 
 	}
 
 	private static class ProjectsListener implements Listener<JiraProject[]> {
-
 		private ListPreference prefList;
 
 		public ProjectsListener(ListPreference prefList) {
@@ -94,10 +97,20 @@ public class MainPreferenceActivity extends Activity {
 	}
 
 	private static class ProjectsErrorListener implements ErrorListener {
+		private ListPreference prefList;
+		private String errorMessage;
+
+		public ProjectsErrorListener(ListPreference prefList,
+				String errorMessage) {
+			this.prefList = prefList;
+			this.errorMessage = errorMessage;
+		}
 
 		@Override
 		public void onErrorResponse(VolleyError error) {
-			Log.e("Preferences Invalid:", error.toString());
+			prefList.setSummary(errorMessage);
+			prefList.setEntries(new String[] {});
+			prefList.setEntryValues(new String[] {});
 		}
 
 	}

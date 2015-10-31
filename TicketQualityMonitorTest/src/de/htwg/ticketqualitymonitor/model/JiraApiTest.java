@@ -51,7 +51,7 @@ public class JiraApiTest extends AndroidTestCase {
 		String uri = "http://localhost/";
 		String resource = "res";
 		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
-		GsonRequest<String> request = api.getRequestWithCredentials(resource,
+		GsonRequest<String> request = api.getBaseRequest(resource,
 				String.class, new Listener<String>() {
 			@Override
 			public void onResponse(String res) {
@@ -72,7 +72,7 @@ public class JiraApiTest extends AndroidTestCase {
 		String uri = "http://localhost/";
 		final String expectedResponse = "resp";
 		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
-		GsonRequest<String> request = api.getRequestWithCredentials("/res",
+		GsonRequest<String> request = api.getBaseRequest("/res",
 				String.class, new Listener<String>() {
 			@Override
 			public void onResponse(String res) {
