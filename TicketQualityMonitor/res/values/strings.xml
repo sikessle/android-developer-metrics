@@ -3,6 +3,8 @@
 
     <string name="app_name">Ticket Quality Monitor</string>
     <string name="preference_heading">Preferences</string>
+    <string name="preference_heading_credentials">Access Data</string>
+    <string name="preference_heading_projects">Tracked Project</string>
     <string name="preference_title_uri">JIRA Host URI</string>
     <string name="preference_default_uri">http://localhost/</string>
     <string name="preference_summary_uri">The host URI where the JIRA server is accessible</string>
@@ -12,5 +14,18 @@
     <string name="preference_title_password">Password</string>
     <string name="preference_default_password">Secret</string>
     <string name="preference_summary_password">Your password for the JIRA API</string>
+
+    <string-array name="preference_project_default_entries">
+        <item>Loading ..</item>
+    </string-array>
+    
+    <string-array name="preference_project_default_values">
+        <item>0</item>
+    </string-array>
+
+    <string name="key_jira_host">jira_host</string>
+    <string name="key_jira_username">jira_username</string>
+    <string name="key_jira_password">jira_password</string>
+    <string name="key_project">project</string>
 
 </resources>

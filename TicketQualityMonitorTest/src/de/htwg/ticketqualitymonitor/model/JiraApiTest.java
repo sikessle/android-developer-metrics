@@ -5,6 +5,8 @@ import android.util.Base64;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response.Listener;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
 public class JiraApiTest extends AndroidTestCase {
@@ -54,7 +56,7 @@ public class JiraApiTest extends AndroidTestCase {
 			@Override
 			public void onResponse(String res) {
 			}
-		});
+		}, createFailFastErrorListener());
 
 		String userPass = (USER + ":" + PASS);
 		String expectedCredentials = "Basic "
@@ -77,11 +79,21 @@ public class JiraApiTest extends AndroidTestCase {
 				assertEquals(expectedResponse, res);
 				setListenerCalled(true);
 			}
-		});
+		}, createFailFastErrorListener());
 
 		setListenerCalled(false);
 		request.deliverResponse(expectedResponse);
 		assertTrue(listenerCalled);
+	}
+
+	private ErrorListener createFailFastErrorListener() {
+		return new ErrorListener() {
+
+			@Override
+			public void onErrorResponse(VolleyError arg0) {
+				fail("an error ocurred");
+			}
+		};
 	}
 
 }

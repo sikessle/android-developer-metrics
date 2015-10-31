@@ -1,18 +1,30 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="@string/preference_heading" >
+    <PreferenceCategory android:title="@string/preference_heading_credentials" >
         <EditTextPreference
-            android:key="jira_host"
+            android:defaultValue="@string/preference_default_uri"
+            android:inputType="textUri"
+            android:key="@string/key_jira_host"
             android:summary="@string/preference_summary_uri"
-            android:title="@string/preference_title_uri" android:defaultValue="@string/preference_default_uri"/>
+            android:title="@string/preference_title_uri" />
         <EditTextPreference
-            android:key="jira_username"
+            android:defaultValue="@string/preference_default_username"
+            android:inputType="text"
+            android:key="@string/key_jira_username"
             android:summary="@string/preference_summary_username"
-            android:title="@string/preference_title_username" android:defaultValue="@string/preference_default_username"/>
+            android:title="@string/preference_title_username" />
         <EditTextPreference
-            android:key="jira_password"
+            android:defaultValue="@string/preference_default_password"
+            android:inputType="textPassword"
+            android:key="@string/key_jira_password"
             android:summary="@string/preference_summary_password"
-            android:title="@string/preference_title_password" android:defaultValue="@string/preference_default_password"/>
+            android:title="@string/preference_title_password" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/preference_heading_projects" >
+        <ListPreference
+            android:entries="@array/preference_project_default_entries"
+            android:entryValues="@array/preference_project_default_values"
+            android:key="@string/key_project" />
     </PreferenceCategory>
 
 </PreferenceScreen>

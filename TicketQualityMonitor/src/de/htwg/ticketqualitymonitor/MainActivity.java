@@ -9,10 +9,9 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import de.htwg.ticketqualitymonitor.model.JiraApi;
-import de.htwg.ticketqualitymonitor.model.RequestQueueSingleton;
 
 public class MainActivity extends Activity implements
-OnSharedPreferenceChangeListener {
+		OnSharedPreferenceChangeListener {
 
 	private JiraApi api;
 
@@ -23,23 +22,13 @@ OnSharedPreferenceChangeListener {
 
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
-		.registerOnSharedPreferenceChangeListener(this);
-		initApiFromPrefs();
-	}
-
-	private void initApiFromPrefs() {
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		String host = prefs.getString("jira_host", "http://localhost/");
-		String user = prefs.getString("jira_username", "admin");
-		String pass = prefs.getString("jira_password", "admin");
-
-		api = new JiraApi(host, user, pass, RequestQueueSingleton.init(this));
+				.registerOnSharedPreferenceChangeListener(this);
+		api = JiraApiFactory.createInstance(this);
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-		initApiFromPrefs();
+		api = JiraApiFactory.createInstance(this);
 	}
 
 	@Override

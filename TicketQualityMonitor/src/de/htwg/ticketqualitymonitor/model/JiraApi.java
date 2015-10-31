@@ -8,10 +8,8 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
-import com.android.volley.VolleyError;
 
 public class JiraApi {
 
@@ -22,7 +20,6 @@ public class JiraApi {
 	private final String user;
 	private final String pass;
 	private final RequestQueue requestQueue;
-	private ErrorListener errorListener;
 	private final Map<String, String> credentials;
 
 	public JiraApi(String uri, String user, String pass,
@@ -31,13 +28,11 @@ public class JiraApi {
 		this.user = user;
 		this.pass = pass;
 		this.requestQueue = requestQueue;
-		errorListener = new LogErrorListener();
 		credentials = new HashMap<String, String>();
 		initCredentialsHeaders();
-	}
 
-	public void setErrorListener(ErrorListener listener) {
-		errorListener = listener != null ? listener : errorListener;
+		Log.i(JiraApi.class.getSimpleName(), "Connection data: " + this.user
+				+ ":" + this.pass + "@" + this.uri);
 	}
 
 	private void initCredentialsHeaders() {
@@ -88,24 +83,16 @@ public class JiraApi {
 	 *            prepended.
 	 */
 	protected <T> GsonRequest<T> getRequestWithCredentials(String resource,
-			Class<T> clazz, Listener<T> listener) {
+			Class<T> clazz, Listener<T> listener, ErrorListener errorListener) {
 		Map<String, String> headers = new HashMap<String, String>(credentials);
 		return new GsonRequest<T>(uri + resource, clazz, headers, listener,
 				errorListener);
 	}
 
-	public void getProjects(Listener<JiraProject[]> listener) {
+	public void getProjects(Listener<JiraProject[]> listener,
+			ErrorListener errorListener) {
 		GsonRequest<JiraProject[]> req = getRequestWithCredentials(PROJECTS,
-				JiraProject[].class, listener);
+				JiraProject[].class, listener, errorListener);
 		requestQueue.add(req);
-	}
-
-	private static class LogErrorListener implements Response.ErrorListener {
-
-		@Override
-		public void onErrorResponse(VolleyError error) {
-			Log.e(JiraApi.class.getSimpleName(), error.getMessage());
-		}
-
 	}
 }
