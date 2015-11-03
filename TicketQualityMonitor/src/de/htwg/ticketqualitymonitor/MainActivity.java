@@ -8,21 +8,21 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SimpleCursorAdapter;
 import de.htwg.ticketqualitymonitor.model.JiraApi;
 import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
+import de.htwg.ticketqualitymonitor.model.JiraIssue;
 
 /**
- * Starting activity which display a list of issues and their remaining costs
- * update rate.
+ * Starting activity which display a list of assigned issues and their remaining
+ * costs update rate.
  */
 public class MainActivity extends Activity implements
 		OnSharedPreferenceChangeListener {
 
 	private JiraApi api;
-	private SimpleCursorAdapter adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +30,7 @@ public class MainActivity extends Activity implements
 		setContentView(R.layout.activity_main);
 
 		showProgressBarOnEmptyIssuesList();
+		mockList();
 
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
@@ -37,15 +38,23 @@ public class MainActivity extends Activity implements
 		api = JiraApiFactory.createInstance(this);
 	}
 
+	private void mockList() {
+		final JiraIssue[] objects = new JiraIssue[] { new JiraIssue() };
+		final ListAdapter adapter = new JiraIssuesListArrayAdapter(this,
+				objects);
+		((ListView) findViewById(R.id.issuesList)).setAdapter(adapter);
+	}
+
 	private void showProgressBarOnEmptyIssuesList() {
-		ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
-		ListView listView = (ListView) findViewById(R.id.issuesList);
+		final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+		final ListView listView = (ListView) findViewById(R.id.issuesList);
 		listView.setEmptyView(progressBar);
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 		api = JiraApiFactory.createInstance(this);
+		// TODO relaod issues list
 	}
 
 	@Override
@@ -60,9 +69,9 @@ public class MainActivity extends Activity implements
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
+		final int id = item.getItemId();
 		if (id == R.id.settingsAction) {
-			Intent settingsIntent = new Intent(this,
+			final Intent settingsIntent = new Intent(this,
 					MainPreferenceActivity.class);
 			startActivity(settingsIntent);
 			return true;
