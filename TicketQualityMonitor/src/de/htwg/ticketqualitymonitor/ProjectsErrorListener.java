@@ -2,6 +2,7 @@ package de.htwg.ticketqualitymonitor;
 
 import android.preference.ListPreference;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.util.Log;
 
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.VolleyError;
@@ -10,9 +11,9 @@ import com.android.volley.VolleyError;
  * Handles error while retrieving projects from the Jira API.
  */
 public class ProjectsErrorListener implements ErrorListener {
-	private ListPreference prefList;
-	private String errorMessage;
-	private OnPreferenceClickListener errorClickListener;
+	private final ListPreference prefList;
+	private final String errorMessage;
+	private final OnPreferenceClickListener errorClickListener;
 
 	/**
 	 * @param errorClickListener
@@ -40,6 +41,8 @@ public class ProjectsErrorListener implements ErrorListener {
 		prefList.setEntries(new String[] {});
 		prefList.setEntryValues(new String[] {});
 		prefList.setOnPreferenceClickListener(errorClickListener);
+
+		Log.e(ProjectsErrorListener.class.getSimpleName(), error.toString());
 	}
 
 }
