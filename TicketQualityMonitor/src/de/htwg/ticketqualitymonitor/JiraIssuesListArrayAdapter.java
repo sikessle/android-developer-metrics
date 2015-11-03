@@ -36,9 +36,12 @@ public class JiraIssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 		final TextView issueItemDescription = (TextView) convertView
 				.findViewById(R.id.issueItemDescription);
 		// Populate the data into the template view using the data object
-		issueItemName.setText(issue.getName());
-		issueItemDescription
-				.setText("Rest effort: 3 updates/day\nRemaining effort: 21 h");
+		issueItemName.setText(issue.getKey());
+		String description = getContext().getString(R.string.hours_per_update);
+		description += " " + issue.getSpentTimeHoursPerUpdate();
+		description += "\n" + getContext().getString(R.string.assignee) + ": "
+				+ issue.getAssignee();
+		issueItemDescription.setText(description);
 		// Return the completed view to render on screen
 		return convertView;
 	}
@@ -53,8 +56,8 @@ public class JiraIssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 
 		@Override
 		public int compare(JiraIssue lhs, JiraIssue rhs) {
-			final double lhsRate = lhs.getWorklogUpdatesPerDay();
-			final double rhsRate = lhs.getWorklogUpdatesPerDay();
+			final double lhsRate = lhs.getSpentTimeHoursPerUpdate();
+			final double rhsRate = lhs.getSpentTimeHoursPerUpdate();
 
 			if (lhsRate < rhsRate) {
 				return -1;

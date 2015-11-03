@@ -1,7 +1,5 @@
 package de.htwg.ticketqualitymonitor.model;
 
-import java.util.Arrays;
-
 import net.jcip.annotations.Immutable;
 
 /**
@@ -11,13 +9,8 @@ import net.jcip.annotations.Immutable;
 @Immutable
 public class JiraIssue {
 
-	private final String name = "AUMEFUENF-27";
-	// TODO add owner
-	private JiraWorkLog[] worklogs;
-
-	// TODO issues which are assigned and NOT finished: calculation: startDate
-	// of Issue and WorklogStartDates proportion
-	// TODO add sub issues
+	private String key;
+	private Fields fields;
 
 	/**
 	 * For GSON
@@ -25,17 +18,52 @@ public class JiraIssue {
 	public JiraIssue() {
 	}
 
-	public String getName() {
-		return name;
+	public String getKey() {
+		return key;
 	}
 
-	public JiraWorkLog[] getWorklogs() {
-		return Arrays.copyOf(worklogs, worklogs.length);
+	public String getAssignee() {
+		return fields.assignee.name;
 	}
 
-	public double getWorklogUpdatesPerDay() {
-		// TODO calculate
-		return 2.0;
+	public double getSpentTimeHoursPerUpdate() {
+		return fields.timetracking.timeSpentSeconds / 60. / 60.
+				/ fields.worklog.worklogs.length;
+	}
+
+	public static class Fields {
+		private Assignee assignee;
+		private Worklog worklog;
+		private Timetracking timetracking;
+
+		public Fields() {
+		}
+	}
+
+	public static class Assignee {
+		private String name;
+
+		public Assignee() {
+		}
+	}
+
+	public static class Worklog {
+		private WorklogItem[] worklogs;
+
+		public Worklog() {
+		}
+	}
+
+	public static class WorklogItem {
+		public WorklogItem() {
+		}
+	}
+
+	public static class Timetracking {
+		private long timeSpentSeconds;
+
+		public Timetracking() {
+		}
 	}
 
 }

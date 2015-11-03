@@ -18,12 +18,14 @@
     <string name="preference_error_projects">Retrieving projects failed. 
         Please check your credentials and the URI. Click here to reload.</string>
     <string name="preference_title_color_threshold_green">Green</string>
-    <string name="preference_default_color_threshold_green">0.5</string>
-    <string name="preference_summary_color_threshold_green">Minimum updates per hour to be marked green.</string>
+    <string name="preference_default_color_threshold_green">2.0</string>
+    <string name="preference_summary_color_threshold_green">Maximum hours per update to be marked green.</string>
     <string name="preference_title_color_threshold_yellow">Yellow</string>
-    <string name="preference_default_color_threshold_yellow">0.25</string>
-    <string name="preference_summary_color_threshold_yellow">Minimum updates per hour to be marked yellow.</string>
+    <string name="preference_default_color_threshold_yellow">4.0</string>
+    <string name="preference_summary_color_threshold_yellow">Maximum hours per update to be marked yellow.</string>
     <string name="loading">Loading ..</string>
+    <string name="hours_per_update">hours spent per update</string>
+    <string name="assignee">Assignee</string>
 
     <string-array name="preference_default_project_entries"></string-array>
     <string-array name="preference_default_project_values"></string-array>

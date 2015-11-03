@@ -34,7 +34,7 @@ public class JiraApi {
 	private final String pass;
 	private final RequestQueue requestQueue;
 	private final Map<String, String> credentials;
-	private RetryPolicy retryPolicy;
+	private final RetryPolicy retryPolicy;
 
 	/**
 	 * @param uri
@@ -63,12 +63,12 @@ public class JiraApi {
 	}
 
 	private void initBasicAuthHeader() {
-		String userPass = (user + ":" + pass);
+		final String userPass = (user + ":" + pass);
 		String userPassBase64;
 		try {
 			userPassBase64 = Base64.encodeToString(userPass.getBytes("UTF-8"),
 					Base64.NO_WRAP);
-		} catch (UnsupportedEncodingException e) {
+		} catch (final UnsupportedEncodingException e) {
 			Log.e(JiraApi.class.getSimpleName(), e.getMessage());
 			throw new RuntimeException(e);
 		}
@@ -127,8 +127,8 @@ public class JiraApi {
 		synchronized (credentials) {
 			headers = new HashMap<String, String>(credentials);
 		}
-		GsonRequest<T> request = new GsonRequest<T>(uri + resource, clazz,
-				headers, listener, errorListener);
+		final GsonRequest<T> request = new GsonRequest<T>(uri + resource,
+				clazz, headers, listener, errorListener);
 		request.setRetryPolicy(retryPolicy);
 
 		Log.i(JiraApi.class.getSimpleName(), "Request created");
@@ -147,8 +147,14 @@ public class JiraApi {
 	 */
 	public void getProjects(Listener<JiraProject[]> listener,
 			ErrorListener errorListener) {
-		GsonRequest<JiraProject[]> req = createBaseRequest(PROJECTS,
+		final GsonRequest<JiraProject[]> req = createBaseRequest(PROJECTS,
 				JiraProject[].class, listener, errorListener);
 		requestQueue.add(req);
+	}
+
+	public void getAssignedInProgressIssuess(String projectKey,
+			Listener<JiraIssue[]> listener, ErrorListener errorListener) {
+
+		// search?jql=project=AUMEWT%20AND%20status=\"In%20Progress\"&fields=assignee,worklog,timetracking&maxResults=100"
 	}
 }
