@@ -11,6 +11,10 @@ import android.view.MenuItem;
 import de.htwg.ticketqualitymonitor.model.JiraApi;
 import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
 
+/**
+ * Starting activity which display a list of issues and their remaining costs
+ * update rate.
+ */
 public class MainActivity extends Activity implements
 		OnSharedPreferenceChangeListener {
 

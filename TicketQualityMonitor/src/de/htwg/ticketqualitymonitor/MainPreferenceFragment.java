@@ -12,10 +12,11 @@ import de.htwg.ticketqualitymonitor.model.JiraApi;
 import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
 
 /**
- * This fragment shows the preferences for the first header.
+ * This fragment shows the main preferences and handles the interaction with
+ * items.
  */
 public class MainPreferenceFragment extends PreferenceFragment implements
-OnSharedPreferenceChangeListener, OnPreferenceClickListener {
+		OnSharedPreferenceChangeListener, OnPreferenceClickListener {
 
 	private JiraApi api;
 
@@ -25,7 +26,7 @@ OnSharedPreferenceChangeListener, OnPreferenceClickListener {
 
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(getActivity())
-		.registerOnSharedPreferenceChangeListener(this);
+				.registerOnSharedPreferenceChangeListener(this);
 		api = JiraApiFactory.createInstance(getActivity());
 
 		// Load the preferences from an XML resource
@@ -43,6 +44,7 @@ OnSharedPreferenceChangeListener, OnPreferenceClickListener {
 
 	@Override
 	public boolean onPreferenceClick(Preference preference) {
+		// Kill the dialog and reload the projects (retry of failed load)
 		((ListPreference) preference).getDialog().dismiss();
 		initProjectList();
 		return false;

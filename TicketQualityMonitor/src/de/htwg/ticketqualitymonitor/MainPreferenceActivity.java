@@ -3,6 +3,9 @@ package de.htwg.ticketqualitymonitor;
 import android.app.Activity;
 import android.os.Bundle;
 
+/**
+ * Dispays the main preferences screen.
+ */
 public class MainPreferenceActivity extends Activity {
 
 	@Override
@@ -10,8 +13,8 @@ public class MainPreferenceActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		getFragmentManager().beginTransaction()
-				.replace(android.R.id.content, new MainPreferenceFragment())
-				.commit();
+		.replace(android.R.id.content, new MainPreferenceFragment())
+		.commit();
 	}
 
 }
