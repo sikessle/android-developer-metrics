@@ -12,7 +12,12 @@ import net.jcip.annotations.Immutable;
 public class JiraIssue {
 
 	private final String name = "AUMEFUENF-27";
+	// TODO add owner
 	private JiraWorkLog[] worklogs;
+
+	// TODO issues which are assigned and NOT finished: calculation: startDate
+	// of Issue and WorklogStartDates proportion
+	// TODO add sub issues
 
 	/**
 	 * For GSON

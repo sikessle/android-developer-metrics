@@ -5,6 +5,7 @@
     <string name="preference_heading">Preferences</string>
     <string name="preference_heading_credentials">Access Data</string>
     <string name="preference_heading_projects">Tracked Project</string>
+    <string name="preference_heading_colors">Color Thresholds</string>
     <string name="preference_title_uri">JIRA Host URI</string>
     <string name="preference_default_uri">http://localhost/</string>
     <string name="preference_summary_uri">The host URI where the JIRA server is accessible</string>
@@ -16,6 +17,12 @@
     <string name="preference_summary_password">Your password for the JIRA API</string>
     <string name="preference_error_projects">Retrieving projects failed. 
         Please check your credentials and the URI. Click here to reload.</string>
+    <string name="preference_title_color_threshold_green">Green</string>
+    <string name="preference_default_color_threshold_green">0.5</string>
+    <string name="preference_summary_color_threshold_green">Minimum updates per hour to be marked green.</string>
+    <string name="preference_title_color_threshold_yellow">Yellow</string>
+    <string name="preference_default_color_threshold_yellow">0.25</string>
+    <string name="preference_summary_color_threshold_yellow">Minimum updates per hour to be marked yellow.</string>
     <string name="loading">Loading ..</string>
 
     <string-array name="preference_default_project_entries"></string-array>
@@ -25,5 +32,7 @@
     <string name="key_jira_username">jira_username</string>
     <string name="key_jira_password">jira_password</string>
     <string name="key_project">project</string>
+    <string name="key_color_threshold_green">color_threshold_green</string>
+    <string name="key_color_threshold_yellow">color_threshold_yellow</string>
 
 </resources>
