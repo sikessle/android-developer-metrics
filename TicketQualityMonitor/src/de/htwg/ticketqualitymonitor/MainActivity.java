@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import de.htwg.ticketqualitymonitor.model.JiraApi;
+import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
 
 public class MainActivity extends Activity implements
 		OnSharedPreferenceChangeListener {

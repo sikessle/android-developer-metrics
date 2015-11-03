@@ -9,6 +9,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import de.htwg.ticketqualitymonitor.model.JiraApi;
+import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
 
 /**
  * This fragment shows the preferences for the first header.

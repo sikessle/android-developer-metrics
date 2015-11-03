@@ -1,10 +1,9 @@
-package de.htwg.ticketqualitymonitor;
+package de.htwg.ticketqualitymonitor.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import de.htwg.ticketqualitymonitor.model.JiraApi;
-import de.htwg.ticketqualitymonitor.model.RequestQueueSingleton;
+import de.htwg.ticketqualitymonitor.R;
 
 public class JiraApiFactory {
 
