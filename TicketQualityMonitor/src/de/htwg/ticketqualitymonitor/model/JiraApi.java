@@ -34,7 +34,7 @@ public class JiraApi {
 		this.pass = pass;
 		this.requestQueue = requestQueue;
 		credentials = new HashMap<String, String>();
-		initCredentialsHeaders();
+		initBasicAuthHeader();
 		retryPolicy = new DefaultRetryPolicy(TIMEOUT_MS, MAX_RETRIES,
 				DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
 
@@ -42,7 +42,7 @@ public class JiraApi {
 				+ ":" + this.pass + "@" + this.uri);
 	}
 
-	private void initCredentialsHeaders() {
+	private void initBasicAuthHeader() {
 		String userPass = (user + ":" + pass);
 		String userPassBase64;
 		try {
@@ -89,7 +89,7 @@ public class JiraApi {
 	 *            The resource to aquire: i.e. "project". The base uri will be
 	 *            prepended.
 	 */
-	protected <T> GsonRequest<T> getBaseRequest(String resource,
+	protected <T> GsonRequest<T> createBaseRequest(String resource,
 			Class<T> clazz, Listener<T> listener, ErrorListener errorListener) {
 		Map<String, String> headers = new HashMap<String, String>(credentials);
 		GsonRequest<T> request = new GsonRequest<T>(uri + resource, clazz,
@@ -103,7 +103,7 @@ public class JiraApi {
 
 	public void getProjects(Listener<JiraProject[]> listener,
 			ErrorListener errorListener) {
-		GsonRequest<JiraProject[]> req = getBaseRequest(PROJECTS,
+		GsonRequest<JiraProject[]> req = createBaseRequest(PROJECTS,
 				JiraProject[].class, listener, errorListener);
 		requestQueue.add(req);
 	}
