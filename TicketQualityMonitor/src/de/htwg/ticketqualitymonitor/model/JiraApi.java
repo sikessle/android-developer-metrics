@@ -24,6 +24,12 @@ public class JiraApi {
 	private static final String URI_API_SUFFIX = "rest/api/2/";
 	/** Resource key (URI component) to access the projects resource */
 	private static final String PROJECTS = "project";
+	/** Char as a placeholder */
+	private static final String REPLACE_CHAR = "#";
+	/** Assigned and in progress issues. Replace # with a project key. */
+	private static final String ISSUES_TEMPLATE = "search?jql=project="
+			+ REPLACE_CHAR
+			+ "%20AND%20status=\"In%20Progress\"&fields=assignee,worklog,timetracking&maxResults=100";
 	/** Timeout after which the request fails */
 	private static final int TIMEOUT_MS = 4000;
 	/** Number of retries before the request fails */
@@ -152,9 +158,23 @@ public class JiraApi {
 		requestQueue.add(req);
 	}
 
+	/**
+	 * Returns a list of all issues for the given project. The issues must be in
+	 * progress.
+	 *
+	 * @param projectKey
+	 *            The project of which the issues are requested.
+	 * @param listener
+	 *            A listener which will be callef if the request suceeds to
+	 *            handle the result.
+	 * @param errorListener
+	 *            A listener which will be called if an error occurs.
+	 */
 	public void getAssignedInProgressIssuess(String projectKey,
 			Listener<JiraIssue[]> listener, ErrorListener errorListener) {
-
-		// search?jql=project=AUMEWT%20AND%20status=\"In%20Progress\"&fields=assignee,worklog,timetracking&maxResults=100"
+		final GsonRequest<JiraIssue[]> req = createBaseRequest(
+				ISSUES_TEMPLATE.replace(REPLACE_CHAR, projectKey),
+				JiraIssue[].class, listener, errorListener);
+		requestQueue.add(req);
 	}
 }
