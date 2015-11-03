@@ -3,7 +3,7 @@
     tools:context="de.htwg.ticketqualitymonitor.MainActivity" >
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/settingsAction"
         android:orderInCategory="100"
         android:showAsAction="always"
         android:icon="@android:drawable/ic_menu_preferences"

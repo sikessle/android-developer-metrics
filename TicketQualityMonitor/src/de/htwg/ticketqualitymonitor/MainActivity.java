@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.SimpleCursorAdapter;
 import de.htwg.ticketqualitymonitor.model.JiraApi;
 import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
 
@@ -19,16 +22,25 @@ public class MainActivity extends Activity implements
 		OnSharedPreferenceChangeListener {
 
 	private JiraApi api;
+	private SimpleCursorAdapter adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		showProgressBarOnEmptyIssuesList();
+
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
 		api = JiraApiFactory.createInstance(this);
+	}
+
+	private void showProgressBarOnEmptyIssuesList() {
+		ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+		ListView listView = (ListView) findViewById(R.id.issuesList);
+		listView.setEmptyView(progressBar);
 	}
 
 	@Override
@@ -49,7 +61,7 @@ public class MainActivity extends Activity implements
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		if (id == R.id.settingsAction) {
 			Intent settingsIntent = new Intent(this,
 					MainPreferenceActivity.class);
 			startActivity(settingsIntent);
