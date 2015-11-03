@@ -7,12 +7,12 @@ import net.jcip.annotations.Immutable;
  * will be instantiated by GSON and filled via reflection.
  */
 @Immutable
-public class JiraWorkLogs {
+public class JiraWorkLog {
 
 	/**
 	 * For GSON
 	 */
-	public JiraWorkLogs() {
+	public JiraWorkLog() {
 	}
 
 }

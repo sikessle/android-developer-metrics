@@ -1,5 +1,7 @@
 package de.htwg.ticketqualitymonitor.model;
 
+import java.util.Arrays;
+
 import net.jcip.annotations.Immutable;
 
 /**
@@ -9,8 +11,8 @@ import net.jcip.annotations.Immutable;
 @Immutable
 public class JiraIssue {
 
-	private final String name = "ISSUEDummy";
-	private JiraWorkLogs[] worklogs;
+	private final String name = "AUMEFUENF-27";
+	private JiraWorkLog[] worklogs;
 
 	/**
 	 * For GSON
@@ -22,8 +24,13 @@ public class JiraIssue {
 		return name;
 	}
 
-	public JiraWorkLogs[] getWorklogs() {
-		return worklogs;
+	public JiraWorkLog[] getWorklogs() {
+		return Arrays.copyOf(worklogs, worklogs.length);
+	}
+
+	public double getWorklogUpdatesPerDay() {
+		// TODO calculate
+		return 2.0;
 	}
 
 }

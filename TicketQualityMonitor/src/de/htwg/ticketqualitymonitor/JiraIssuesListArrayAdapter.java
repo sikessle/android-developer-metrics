@@ -1,5 +1,7 @@
 package de.htwg.ticketqualitymonitor;
 
+import java.util.Comparator;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,8 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
  * Adapter to display a list of Jira issues.
  */
 public class JiraIssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
+
+	private final Comparator<JiraIssue> comparator = new JiraIssueComparator();
 
 	public JiraIssuesListArrayAdapter(Context context, JiraIssue[] issues) {
 		super(context, 0, issues);
@@ -37,6 +41,29 @@ public class JiraIssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 				.setText("Rest effort: 3 updates/day\nRemaining effort: 21 h");
 		// Return the completed view to render on screen
 		return convertView;
+	}
+
+	@Override
+	public void notifyDataSetChanged() {
+		sort(comparator);
+		super.notifyDataSetChanged();
+	}
+
+	private class JiraIssueComparator implements Comparator<JiraIssue> {
+
+		@Override
+		public int compare(JiraIssue lhs, JiraIssue rhs) {
+			final double lhsRate = lhs.getWorklogUpdatesPerDay();
+			final double rhsRate = lhs.getWorklogUpdatesPerDay();
+
+			if (lhsRate < rhsRate) {
+				return -1;
+			}
+			if (rhsRate > lhsRate) {
+				return 1;
+			}
+			return 0;
+		}
 
 	}
 }

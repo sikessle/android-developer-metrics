@@ -32,6 +32,8 @@ public class MainActivity extends Activity implements
 		showProgressBarOnEmptyIssuesList();
 		mockList();
 
+		// TODO get subissuess... as well
+
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
@@ -39,7 +41,8 @@ public class MainActivity extends Activity implements
 	}
 
 	private void mockList() {
-		final JiraIssue[] objects = new JiraIssue[] { new JiraIssue() };
+		final JiraIssue[] objects = new JiraIssue[] { new JiraIssue(),
+				new JiraIssue(), new JiraIssue() };
 		final ListAdapter adapter = new JiraIssuesListArrayAdapter(this,
 				objects);
 		((ListView) findViewById(R.id.issuesList)).setAdapter(adapter);
