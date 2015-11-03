@@ -32,8 +32,6 @@ public class MainActivity extends Activity implements
 		showProgressBarOnEmptyIssuesList();
 		mockList();
 
-		// TODO get subissuess... as well
-
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
