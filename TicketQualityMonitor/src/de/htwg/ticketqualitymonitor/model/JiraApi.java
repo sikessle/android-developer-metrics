@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.jcip.annotations.ThreadSafe;
 import android.util.Base64;
 import android.util.Log;
 
@@ -13,11 +14,19 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.RetryPolicy;
 
+/**
+ * Encapsulates the Jira API and allows some specific calls to it.
+ */
+@ThreadSafe
 public class JiraApi {
 
+	/** Suffix for the base URI to access the REST API */
 	private static final String URI_API_SUFFIX = "rest/api/2/";
+	/** Resource key (URI component) to access the projects resource */
 	private static final String PROJECTS = "project";
+	/** Timeout after which the request fails */
 	private static final int TIMEOUT_MS = 4000;
+	/** Number of retries before the request fails */
 	private static final int MAX_RETRIES = 0;
 
 	private final String uri;
@@ -27,9 +36,20 @@ public class JiraApi {
 	private final Map<String, String> credentials;
 	private RetryPolicy retryPolicy;
 
+	/**
+	 * @param uri
+	 *            The base URI at which the Jira server is accessible.
+	 * @param user
+	 *            The username to access the Jira server.
+	 * @param pass
+	 *            The password to access the Jira server.
+	 * @param requestQueue
+	 *            A {@link RequestQueue} which handles the request sent by this
+	 *            object.
+	 */
 	public JiraApi(String uri, String user, String pass,
 			RequestQueue requestQueue) {
-		this.uri = sanitizeUri(uri);
+		this.uri = completeUri(uri);
 		this.user = user;
 		this.pass = pass;
 		this.requestQueue = requestQueue;
@@ -55,7 +75,15 @@ public class JiraApi {
 		credentials.put("Authorization", "Basic " + userPassBase64);
 	}
 
-	private String sanitizeUri(String possibleUri) {
+	/**
+	 * Ensures that the given URI starts with http:// and ends with the URI
+	 * suffix to access the REST API.
+	 *
+	 * @param possibleUri
+	 *            The URI to check and sanitize.
+	 * @return The completed and valid URI.
+	 */
+	private String completeUri(String possibleUri) {
 		final StringBuilder result = new StringBuilder(possibleUri);
 		final String prefix = "http://";
 		final String suffix = "/";
@@ -85,13 +113,20 @@ public class JiraApi {
 	}
 
 	/**
+	 * Creates a base request with some basic headers (like authentication)
+	 * which can be furhter complemented.
+	 *
 	 * @param resource
 	 *            The resource to aquire: i.e. "project". The base uri will be
 	 *            prepended.
+	 * @return The base request for the given resource.
 	 */
 	protected <T> GsonRequest<T> createBaseRequest(String resource,
 			Class<T> clazz, Listener<T> listener, ErrorListener errorListener) {
-		Map<String, String> headers = new HashMap<String, String>(credentials);
+		Map<String, String> headers;
+		synchronized (credentials) {
+			headers = new HashMap<String, String>(credentials);
+		}
 		GsonRequest<T> request = new GsonRequest<T>(uri + resource, clazz,
 				headers, listener, errorListener);
 		request.setRetryPolicy(retryPolicy);
@@ -101,6 +136,15 @@ public class JiraApi {
 		return request;
 	}
 
+	/**
+	 * Returns a list of all projects which are visible for the specified user.
+	 *
+	 * @param listener
+	 *            A listener which will be called if the request succeeds to
+	 *            handle the result.
+	 * @param errorListener
+	 *            A listener which will be called if an error occurs.
+	 */
 	public void getProjects(Listener<JiraProject[]> listener,
 			ErrorListener errorListener) {
 		GsonRequest<JiraProject[]> req = createBaseRequest(PROJECTS,
