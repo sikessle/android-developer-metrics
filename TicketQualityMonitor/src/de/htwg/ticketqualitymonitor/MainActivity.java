@@ -11,8 +11,6 @@ import android.view.MenuItem;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import de.htwg.ticketqualitymonitor.model.JiraApi;
-import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
 import de.htwg.ticketqualitymonitor.model.JiraIssue;
 
 /**
@@ -22,23 +20,28 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
 public class MainActivity extends Activity implements
 		OnSharedPreferenceChangeListener {
 
-	private JiraApi api;
 	private ListAdapter adapter;
-	private Intent serviceIntent;
+	private NotificationServiceManager notificationManager;
+	private static final long SERVICE_INTERVAL_MINUTES = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		setUpNotificationManager();
 		showProgressBarOnEmptyIssuesList();
 		connectAdapter();
-		startIssuesService();
 
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
-		api = JiraApiFactory.createInstance(this);
+	}
+
+	private void setUpNotificationManager() {
+		notificationManager = new NotificationServiceManager(
+				SERVICE_INTERVAL_MINUTES, IssuesNotificationService.class);
+		notificationManager.stop(this);
 	}
 
 	private void showProgressBarOnEmptyIssuesList() {
@@ -52,17 +55,26 @@ public class MainActivity extends Activity implements
 		((ListView) findViewById(R.id.issuesList)).setAdapter(adapter);
 	}
 
-	private void startIssuesService() {
-		// TODO do that via a button etc..
-		serviceIntent = new Intent(this, IssuesService.class);
-		startService(serviceIntent);
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+		// TODO relaod issues list with new adapter! (because of colors etc..)
+		// TODO also restart service
 	}
 
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-		api = JiraApiFactory.createInstance(this);
-		// TODO relaod issues list with new adapter! (because of colors etc..)
-		// TODO also restart service
+	protected void onPause() {
+		super.onPause();
+
+		// Start notification service if app is paused
+		notificationManager.start(this);
+	}
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+
+		// Cancel notification service if app is active
+		notificationManager.stop(this);
 	}
 
 	@Override
