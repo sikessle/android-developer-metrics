@@ -1,5 +1,6 @@
 package de.htwg.ticketqualitymonitor;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import android.app.AlarmManager;
@@ -7,12 +8,16 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 public class NotificationServiceManager {
 
 	private final long intervalMillis;
 	private final Class<? extends Service> serviceClass;
+	private final CriticalIssuesReceiver issuesReceiver;
+	private boolean receiverRegistered;
 
 	/**
 	 * @param intervalMinutes
@@ -25,12 +30,19 @@ public class NotificationServiceManager {
 			Class<? extends Service> serviceClass) {
 		this.serviceClass = serviceClass;
 		intervalMillis = TimeUnit.MINUTES.toMillis(intervalMinutes);
+		issuesReceiver = new CriticalIssuesReceiver();
 	}
 
 	/**
 	 * Starts the service.
 	 */
 	public void start(Context context) {
+		if (!receiverRegistered) {
+			final IntentFilter filter = new IntentFilter(
+					CriticalIssuesFetchService.BROADCAST_ACTION);
+			LocalBroadcastManager.getInstance(context).registerReceiver(
+					issuesReceiver, filter);
+		}
 		final PendingIntent pendingIntent = PendingIntent.getService(context,
 				0, new Intent(context, serviceClass),
 				PendingIntent.FLAG_CANCEL_CURRENT);
@@ -56,6 +68,14 @@ public class NotificationServiceManager {
 
 	private AlarmManager getAlarmManager(Context context) {
 		return (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+	}
+
+	public Set<String> getCriticalIssueKeys() {
+		return issuesReceiver.getPreviousKeys();
+	}
+
+	public void setCriticalIssueKeys(Set<String> notifiedCriticalIssueKeys) {
+		issuesReceiver.setPreviousKeys(notifiedCriticalIssueKeys);
 	}
 
 }

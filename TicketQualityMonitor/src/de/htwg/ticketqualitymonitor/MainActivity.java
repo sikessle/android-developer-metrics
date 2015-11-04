@@ -1,5 +1,6 @@
 package de.htwg.ticketqualitymonitor;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
@@ -37,6 +38,7 @@ public class MainActivity extends Activity implements OnRefreshListener {
 	private Runnable loadIssuesRunnable;
 	private boolean enableNotifications;
 	private boolean autoRefreshCancelled;
+	private Set<String> notifiedCriticalIssueKeys;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,7 @@ public class MainActivity extends Activity implements OnRefreshListener {
 	protected void onPause() {
 		super.onPause();
 
+		notifiedCriticalIssueKeys = notificationManager.getCriticalIssueKeys();
 		stopAutoRefresh();
 		// Start notification service if app is paused
 		if (enableNotifications) {
@@ -107,7 +110,10 @@ public class MainActivity extends Activity implements OnRefreshListener {
 		final int delay = Integer.parseInt(prefs.getString(
 				getString(R.string.key_notifications_interval), "1"));
 		notificationManager = new NotificationServiceManager(delay,
-				IssuesNotificationService.class);
+				CriticalIssuesFetchService.class);
+		if (notifiedCriticalIssueKeys != null) {
+			notificationManager.setCriticalIssueKeys(notifiedCriticalIssueKeys);
+		}
 		enableNotifications = prefs.getBoolean(
 				getString(R.string.key_enable_notifications), false);
 	}

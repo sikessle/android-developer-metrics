@@ -30,7 +30,7 @@
         </activity>
 
         <service
-            android:name=".IssuesNotificationService"
+            android:name=".CriticalIssuesFetchService"
             android:exported="false" />
     </application>
 
