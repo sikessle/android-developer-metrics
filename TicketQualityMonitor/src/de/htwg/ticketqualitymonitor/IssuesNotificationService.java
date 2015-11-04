@@ -1,15 +1,8 @@
 package de.htwg.ticketqualitymonitor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.android.volley.Response.ErrorListener;
-import com.android.volley.Response.Listener;
-import com.android.volley.VolleyError;
-
-import de.htwg.ticketqualitymonitor.model.JiraApi;
-import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
-import de.htwg.ticketqualitymonitor.model.JiraIssue;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -19,6 +12,14 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+
+import de.htwg.ticketqualitymonitor.model.JiraApi;
+import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
+import de.htwg.ticketqualitymonitor.model.JiraIssue;
 
 /**
  * Notifies the user about new critical issues.
@@ -91,11 +92,11 @@ public class IssuesNotificationService extends IntentService {
 
 	private class NotificationIssuesListener implements Listener<JiraIssue[]> {
 
-		private List<String> previousCriticalIssues = new ArrayList<>();
+		private Set<String> previousCriticalIssues = new HashSet<>();
 
 		@Override
 		public void onResponse(JiraIssue[] issues) {
-			final List<String> currentCriticalIssues = new ArrayList<>();
+			final Set<String> currentCriticalIssues = new HashSet<>();
 
 			for (final JiraIssue issue : issues) {
 				if (issue.getSpentTimeHoursPerUpdate() > thresholdCritical) {
@@ -103,7 +104,7 @@ public class IssuesNotificationService extends IntentService {
 				}
 			}
 
-			if (!previousCriticalIssues.equals(currentCriticalIssues)) {
+			if (!currentCriticalIssues.containsAll(previousCriticalIssues)) {
 				sendNotification();
 			}
 			previousCriticalIssues = currentCriticalIssues;
