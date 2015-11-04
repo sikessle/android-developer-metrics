@@ -138,7 +138,8 @@ public class JiraApi {
 				clazz, headers, listener, errorListener);
 		request.setRetryPolicy(retryPolicy);
 
-		Log.i(JiraApi.class.getSimpleName(), "Request created");
+		Log.i(JiraApi.class.getSimpleName(),
+				"Request created: " + request.getUrl());
 
 		return request;
 	}
