@@ -37,6 +37,7 @@ public class MainActivity extends Activity implements
 	private ListView issuesList;
 	private Handler refreshHandler;
 	private Runnable loadIssuesRunnable;
+	private boolean enableNotifications;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,8 @@ public class MainActivity extends Activity implements
 		notificationManager = new NotificationServiceManager(delay,
 				IssuesNotificationService.class);
 		notificationManager.stop(this);
+		enableNotifications = prefs.getBoolean(
+				getString(R.string.key_enable_notifications), false);
 	}
 
 	private void connectAdapter() {
@@ -135,6 +138,7 @@ public class MainActivity extends Activity implements
 		api = JiraApiFactory.createInstance(this);
 		connectAdapter();
 		loadIssues();
+		setUpNotificationManager();
 	}
 
 	@Override
@@ -142,7 +146,9 @@ public class MainActivity extends Activity implements
 		super.onPause();
 
 		// Start notification service if app is paused
-		notificationManager.start(this);
+		if (enableNotifications) {
+			notificationManager.start(this);
+		}
 	}
 
 	@Override
