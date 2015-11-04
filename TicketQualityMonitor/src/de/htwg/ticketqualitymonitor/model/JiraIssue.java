@@ -29,6 +29,9 @@ public class JiraIssue {
 	}
 
 	public double getSpentTimeHoursPerUpdate() {
+		if (fields.worklog.worklogs.length == 0) {
+			return 0;
+		}
 		return TimeUnit.SECONDS.toHours(fields.timetracking.timeSpentSeconds)
 				/ fields.worklog.worklogs.length;
 	}
