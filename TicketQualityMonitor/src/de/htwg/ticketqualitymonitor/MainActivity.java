@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import de.htwg.ticketqualitymonitor.model.JiraApi;
+import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
 import de.htwg.ticketqualitymonitor.model.JiraIssue;
 
 /**
@@ -20,7 +22,8 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
 public class MainActivity extends Activity implements
 		OnSharedPreferenceChangeListener {
 
-	private ListAdapter adapter;
+	private ArrayAdapter<JiraIssue> adapter;
+	private JiraApi api;
 	private NotificationServiceManager notificationManager;
 	private static final long SERVICE_INTERVAL_MINUTES = 1;
 
@@ -29,8 +32,8 @@ public class MainActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		api = JiraApiFactory.createInstance(this);
 		setUpNotificationManager();
-		showProgressBarOnEmptyIssuesList();
 		connectAdapter();
 
 		// Listen to preference changes
@@ -44,20 +47,43 @@ public class MainActivity extends Activity implements
 		notificationManager.stop(this);
 	}
 
+	private void connectAdapter() {
+		adapter = new IssuesListArrayAdapter(this, new JiraIssue[] {});
+		((ListView) findViewById(R.id.issuesList)).setAdapter(adapter);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		showProgressBarOnEmptyIssuesList();
+		loadIssues();
+	}
+
 	private void showProgressBarOnEmptyIssuesList() {
 		final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
 		final ListView listView = (ListView) findViewById(R.id.issuesList);
 		listView.setEmptyView(progressBar);
 	}
 
-	private void connectAdapter() {
-		adapter = new JiraIssuesListArrayAdapter(this, new JiraIssue[] {});
-		((ListView) findViewById(R.id.issuesList)).setAdapter(adapter);
+	private void loadIssues() {
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
+
+		final String projectKey = prefs.getString(
+				getString(R.string.key_project), "none");
+		final String errorMessage = getString(R.string.issues_error);
+
+		api.getAssignedInProgressIssuess(projectKey,
+				new IssuesListener(adapter), new IssuesErrorListener(
+						errorMessage));
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-		// TODO reload issues list with new adapter! (because of colors etc..)
+		api = JiraApiFactory.createInstance(this);
+		connectAdapter();
+		loadIssues();
 	}
 
 	@Override

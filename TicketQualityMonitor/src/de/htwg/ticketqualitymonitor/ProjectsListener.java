@@ -11,7 +11,7 @@ import de.htwg.ticketqualitymonitor.model.JiraProject;
  * Handles the successful request of projects from the Jira API.
  */
 public class ProjectsListener implements Listener<JiraProject[]> {
-	private ListPreference prefList;
+	private final ListPreference prefList;
 
 	/**
 	 * @param prefList
@@ -24,8 +24,8 @@ public class ProjectsListener implements Listener<JiraProject[]> {
 	@Override
 	public void onResponse(JiraProject[] projects) {
 		// Fill the projects into the preference list.
-		String entries[] = new String[projects.length];
-		String entryValues[] = new String[projects.length];
+		final String entries[] = new String[projects.length];
+		final String entryValues[] = new String[projects.length];
 
 		for (int i = 0; i < projects.length; i++) {
 			entries[i] = projects[i].getName();
@@ -36,7 +36,7 @@ public class ProjectsListener implements Listener<JiraProject[]> {
 		prefList.setEntryValues(entryValues);
 		prefList.setSummary(prefList.getEntry());
 
-		Log.i(MainPreferenceActivity.class.getSimpleName(), "Projects loaded");
+		Log.i(ProjectsListener.class.getSimpleName(), "Projects loaded");
 	}
 
 }

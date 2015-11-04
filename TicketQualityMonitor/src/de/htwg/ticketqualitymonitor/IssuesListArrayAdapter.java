@@ -16,7 +16,7 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
 /**
  * Adapter to display a list of Jira issues.
  */
-public class JiraIssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
+public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 
 	private final Comparator<JiraIssue> comparator = new JiraIssueComparator();
 	private final int colorGreen;
@@ -25,7 +25,7 @@ public class JiraIssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 	private final double thresholdGreen;
 	private final double thresholdYellow;
 
-	public JiraIssuesListArrayAdapter(Context context, JiraIssue[] issues) {
+	public IssuesListArrayAdapter(Context context, JiraIssue[] issues) {
 		super(context, 0, issues);
 		final Resources resources = context.getResources();
 		colorGreen = resources.getColor(R.color.issue_green);
