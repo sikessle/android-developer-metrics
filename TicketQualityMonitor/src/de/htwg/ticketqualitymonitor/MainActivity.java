@@ -1,5 +1,7 @@
 package de.htwg.ticketqualitymonitor;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,7 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
  */
 public class MainActivity extends Activity implements OnRefreshListener {
 
+	private static final String NOTIFIED_ISSUES_KEY = "de.htwg.ticketqualitymonitor.NOTIFIED_ISSUES";
 	private ArrayAdapter<JiraIssue> adapter;
 	private SwipeRefreshLayout swipeRefresh;
 	private JiraApi api;
@@ -45,9 +48,30 @@ public class MainActivity extends Activity implements OnRefreshListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		issuesList = ((ListView) findViewById(R.id.issuesList));
+		// Restore notified issues
+		if (savedInstanceState != null) {
+			restoreNotifiedIssues(savedInstanceState);
+		}
 
+		issuesList = ((ListView) findViewById(R.id.issuesList));
 		setupPullToRefresh();
+	}
+
+	private void restoreNotifiedIssues(Bundle savedInstanceState) {
+		final String[] notifiedIssues = savedInstanceState
+				.getStringArray(NOTIFIED_ISSUES_KEY);
+		if (notifiedIssues != null) {
+			notifiedCriticalIssueKeys = new HashSet<>(
+					Arrays.asList(notifiedIssues));
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		outState.putStringArray(NOTIFIED_ISSUES_KEY,
+				notifiedCriticalIssueKeys.toArray(new String[] {}));
 	}
 
 	@Override
