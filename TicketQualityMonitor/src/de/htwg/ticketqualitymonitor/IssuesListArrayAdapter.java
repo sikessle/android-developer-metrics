@@ -1,5 +1,7 @@
 package de.htwg.ticketqualitymonitor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 
 import android.content.Context;
@@ -26,7 +28,11 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 	private final double thresholdYellow;
 
 	public IssuesListArrayAdapter(Context context, JiraIssue[] issues) {
-		super(context, 0, issues);
+		// Convert the issues array to an array list because ArrayAdapter will
+		// convert an array to an AbstractList which cannot be modified later
+		// on (this would render the add, addAll etc. methods useless).
+		super(context, 0, new ArrayList<JiraIssue>(Arrays.asList(issues)));
+		
 		final Resources resources = context.getResources();
 		colorGreen = resources.getColor(R.color.issue_green);
 		colorYellow = resources.getColor(R.color.issue_yellow);
@@ -35,9 +41,9 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		thresholdGreen = Double.parseDouble(prefs.getString(
-				context.getString(R.string.key_color_threshold_green), "1.0"));
+				context.getString(R.string.key_color_threshold_green), "2.0"));
 		thresholdYellow = Double.parseDouble(prefs.getString(
-				context.getString(R.string.key_color_threshold_yellow), "2.0"));
+				context.getString(R.string.key_color_threshold_yellow), "4.0"));
 	}
 
 	@Override
@@ -55,28 +61,16 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 		return convertView;
 	}
 
-	private void fillView(View viewItemParent, JiraIssue issue) {
+	private void fillView(View rootView, JiraIssue issue) {
 		// Lookup view for data population
-		final TextView issueItemName = (TextView) viewItemParent
+		final TextView issueItemName = (TextView) rootView
 				.findViewById(R.id.issueItemName);
-		final TextView issueItemDescription = (TextView) viewItemParent
+		final TextView issueItemDescription = (TextView) rootView
 				.findViewById(R.id.issueItemDescription);
 
 		// Populate the data into the template view using the data object
 		issueItemName.setText(issue.getKey());
 		issueItemDescription.setText(buildDescription(issue));
-	}
-
-	private void setColor(View viewItemParent, JiraIssue issue) {
-		final double hoursPerUpdate = issue.getSpentTimeHoursPerUpdate();
-
-		if (hoursPerUpdate <= thresholdGreen) {
-			viewItemParent.setBackgroundColor(colorGreen);
-		} else if (hoursPerUpdate <= thresholdYellow) {
-			viewItemParent.setBackgroundColor(colorYellow);
-		} else {
-			viewItemParent.setBackgroundColor(colorRed);
-		}
 	}
 
 	private String buildDescription(JiraIssue issue) {
@@ -94,9 +88,22 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 		return sb.toString();
 	}
 
+	private void setColor(View rootView, JiraIssue issue) {
+		final double hoursPerUpdate = issue.getSpentTimeHoursPerUpdate();
+		final View itemRoot = rootView.findViewById(R.id.issueItem);
+
+		if (hoursPerUpdate <= thresholdGreen) {
+			itemRoot.setBackgroundColor(colorGreen);
+		} else if (hoursPerUpdate <= thresholdYellow) {
+			itemRoot.setBackgroundColor(colorYellow);
+		} else {
+			itemRoot.setBackgroundColor(colorRed);
+		}
+	}
+
 	@Override
 	public void notifyDataSetChanged() {
-		sort(comparator);
+		// TODO sort(comparator);
 		super.notifyDataSetChanged();
 	}
 

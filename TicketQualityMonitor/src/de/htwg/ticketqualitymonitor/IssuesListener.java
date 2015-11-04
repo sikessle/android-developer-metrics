@@ -23,6 +23,7 @@ public class IssuesListener implements Listener<JiraIssue[]> {
 
 	@Override
 	public void onResponse(JiraIssue[] projects) {
+		adapter.clear();
 		adapter.addAll(projects);
 
 		Log.i(IssuesListener.class.getSimpleName(), "Issues loaded");

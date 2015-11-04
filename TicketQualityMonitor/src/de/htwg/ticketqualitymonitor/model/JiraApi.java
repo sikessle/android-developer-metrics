@@ -174,9 +174,17 @@ public class JiraApi {
 	 */
 	public void getAssignedInProgressIssuess(String projectKey,
 			Listener<JiraIssue[]> listener, ErrorListener errorListener) {
-		final GsonRequest<JiraIssue[]> req = createBaseRequest(
+		// Wrap the listener into a custom jql listener to hide the jql response
+		// object.
+		final GsonRequest<JqlObject> req = createBaseRequest(
 				ISSUES_TEMPLATE.replace(REPLACE_CHAR, projectKey),
-				JiraIssue[].class, listener, errorListener);
+				JqlObject.class, createJqlIssueListener(listener),
+				errorListener);
 		requestQueue.add(req);
+	}
+
+	private Listener<JqlObject> createJqlIssueListener(
+			Listener<JiraIssue[]> listener) {
+		return new JqlIssueListener(listener);
 	}
 }
