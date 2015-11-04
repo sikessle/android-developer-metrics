@@ -57,8 +57,7 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-		// TODO relaod issues list with new adapter! (because of colors etc..)
-		// TODO also restart service
+		// TODO reload issues list with new adapter! (because of colors etc..)
 	}
 
 	@Override

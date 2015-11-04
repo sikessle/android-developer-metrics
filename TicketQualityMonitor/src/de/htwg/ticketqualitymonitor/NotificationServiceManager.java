@@ -32,6 +32,7 @@ public class NotificationServiceManager {
 	 * Starts the service.
 	 */
 	public void start(Context context) {
+		stop(context);
 		final Intent serviceIntent = new Intent(context, serviceClass);
 		notificationService = PendingIntent.getService(context, 0,
 				serviceIntent, 0);
