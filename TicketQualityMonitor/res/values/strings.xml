@@ -6,6 +6,8 @@
     <string name="preference_heading_credentials">Access Data</string>
     <string name="preference_heading_projects">Tracked Project</string>
     <string name="preference_heading_colors">Color Thresholds</string>
+    <string name="preference_heading_notifications_refresh">Notifications and Auto Refresh</string>
+    
     <string name="preference_title_uri">JIRA Host URI</string>
     <string name="preference_default_uri">http://localhost/</string>
     <string name="preference_summary_uri">The host URI where the JIRA server is accessible</string>
@@ -23,6 +25,14 @@
     <string name="preference_title_color_threshold_yellow">Yellow</string>
     <string name="preference_default_color_threshold_yellow">4.0</string>
     <string name="preference_summary_color_threshold_yellow">Maximum hours per update to be marked yellow.</string>
+    <string name="preference_title_enable_notifications">Notifications enabled</string>
+    <string name="preference_summary_enable_notifications">Enable or disable notifications about critical issues.</string>
+    <string name="preference_title_notifications_interval">Notifications interval in minutes</string>
+    <string name="preference_default_notifications_interval">15</string>
+    <string name="preference_summary_notifications_interval">Interval between checking for new critical issues.</string>
+    <string name="preference_title_issues_refresh_rate">Issues refresh rate in minutes</string>
+    <string name="preference_default_issues_refresh_rate">1</string>
+    <string name="preference_summary_issues_refresh_rate">How often the issues list will be refreshed if the app is open.</string>
     <string name="loading">Loading ..</string>
     <string name="hours_per_update">hours spent per update</string>
     <string name="assignee">Assignee</string>
@@ -40,5 +50,8 @@
     <string name="key_project">project</string>
     <string name="key_color_threshold_green">color_threshold_green</string>
     <string name="key_color_threshold_yellow">color_threshold_yellow</string>
+    <string name="key_enable_notifications">enable_notifications</string>
+    <string name="key_notifications_interval">notifications_interval</string>
+    <string name="key_issues_refresh_rate">issues_refresh_rate</string>
 
 </resources>

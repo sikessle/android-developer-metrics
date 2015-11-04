@@ -41,5 +41,23 @@
             android:summary="@string/preference_summary_color_threshold_yellow"
             android:title="@string/preference_title_color_threshold_yellow" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/preference_heading_notifications_refresh" >
+        <CheckBoxPreference android:key="@string/key_enable_notifications"
+            android:title="@string/preference_title_enable_notifications"
+            android:summary="@string/preference_summary_enable_notifications">
+        </CheckBoxPreference>
+        <EditTextPreference
+            android:defaultValue="@string/preference_default_notifications_interval"
+            android:inputType="number"
+            android:key="@string/key_notifications_interval"
+            android:summary="@string/preference_summary_notifications_interval"
+            android:title="@string/preference_title_notifications_interval" />
+        <EditTextPreference
+            android:defaultValue="@string/preference_default_issues_refresh_rate"
+            android:inputType="number"
+            android:key="@string/key_issues_refresh_rate"
+            android:summary="@string/preference_summary_issues_refresh_rate"
+            android:title="@string/preference_title_issues_refresh_rate" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

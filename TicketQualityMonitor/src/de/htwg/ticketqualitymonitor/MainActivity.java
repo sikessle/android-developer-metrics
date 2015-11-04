@@ -56,8 +56,11 @@ public class MainActivity extends Activity implements
 	}
 
 	private void setupRefreshHandler() {
-		final int interval = getResources().getInteger(
-				R.integer.issues_refresh_interval_minutes);
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
+
+		final int interval = Integer.parseInt(prefs.getString(
+				getString(R.string.key_issues_refresh_rate), "1"));
 		refreshHandler = new Handler();
 		loadIssuesRunnable = new Runnable() {
 
@@ -79,8 +82,10 @@ public class MainActivity extends Activity implements
 	}
 
 	private void setUpNotificationManager() {
-		final int delay = getResources().getInteger(
-				R.integer.notificaton_delay_minutes);
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		final int delay = Integer.parseInt(prefs.getString(
+				getString(R.string.key_notifications_interval), "1"));
 		notificationManager = new NotificationServiceManager(delay,
 				IssuesNotificationService.class);
 		notificationManager.stop(this);
