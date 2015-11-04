@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListAdapter;
@@ -55,14 +54,8 @@ public class MainActivity extends Activity implements
 
 	private void startIssuesService() {
 		// TODO do that via a button etc..
-		final SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		final String projectKey = prefs.getString(
-				getString(R.string.key_project), "");
 		serviceIntent = new Intent(this, IssuesService.class);
-		serviceIntent.putExtra(IssuesService.INTENT_KEY_PROJECT, projectKey);
 		startService(serviceIntent);
-		Log.i(MainActivity.class.getSimpleName(), "Intent to start service started");
 	}
 
 	@Override
