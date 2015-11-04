@@ -1,5 +1,6 @@
 package de.htwg.ticketqualitymonitor;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
@@ -12,19 +13,23 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
  */
 public class IssuesListener implements Listener<JiraIssue[]> {
 	private final ArrayAdapter<? super JiraIssue> adapter;
+	private final SwipeRefreshLayout swipeRefresh;
 
 	/**
 	 * @param adapter
 	 *            An adapter to fill with the projects.
 	 */
-	public IssuesListener(ArrayAdapter<? super JiraIssue> adapter) {
+	public IssuesListener(ArrayAdapter<? super JiraIssue> adapter,
+			SwipeRefreshLayout swipeRefresh) {
 		this.adapter = adapter;
+		this.swipeRefresh = swipeRefresh;
 	}
 
 	@Override
 	public void onResponse(JiraIssue[] projects) {
 		adapter.clear();
 		adapter.addAll(projects);
+		swipeRefresh.setRefreshing(false);
 
 		Log.i(IssuesListener.class.getSimpleName(), "Issues loaded");
 	}

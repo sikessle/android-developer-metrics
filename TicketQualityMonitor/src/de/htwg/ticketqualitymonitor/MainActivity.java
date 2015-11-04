@@ -6,11 +6,14 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 import de.htwg.ticketqualitymonitor.model.JiraApi;
 import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
 import de.htwg.ticketqualitymonitor.model.JiraIssue;
@@ -20,9 +23,10 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
  * costs update rate.
  */
 public class MainActivity extends Activity implements
-		OnSharedPreferenceChangeListener {
+		OnSharedPreferenceChangeListener, OnRefreshListener {
 
 	private ArrayAdapter<JiraIssue> adapter;
+	private SwipeRefreshLayout swipeRefresh;
 	private JiraApi api;
 	private NotificationServiceManager notificationManager;
 	private static final long SERVICE_INTERVAL_MINUTES = 1;
@@ -32,6 +36,7 @@ public class MainActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		setupPullToRefresh();
 		api = JiraApiFactory.createInstance(this);
 		setUpNotificationManager();
 		connectAdapter();
@@ -39,6 +44,11 @@ public class MainActivity extends Activity implements
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
+	}
+
+	private void setupPullToRefresh() {
+		swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+		swipeRefresh.setOnRefreshListener(this);
 	}
 
 	private void setUpNotificationManager() {
@@ -56,14 +66,7 @@ public class MainActivity extends Activity implements
 	protected void onStart() {
 		super.onStart();
 
-		showProgressBarOnEmptyIssuesList();
 		loadIssues();
-	}
-
-	private void showProgressBarOnEmptyIssuesList() {
-		final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
-		final ListView listView = (ListView) findViewById(R.id.issuesList);
-		listView.setEmptyView(progressBar);
 	}
 
 	private void loadIssues() {
@@ -72,11 +75,25 @@ public class MainActivity extends Activity implements
 
 		final String projectKey = prefs.getString(
 				getString(R.string.key_project), "none");
-		final String errorMessage = getString(R.string.issues_error);
+		final TextView errorView = (TextView) findViewById(R.id.issuesError);
+		if (!swipeRefresh.isRefreshing()) {
+			swipeRefresh.post(new Runnable() {
+				@Override
+				public void run() {
+					swipeRefresh.setRefreshing(true);
+				}
+			});
+		}
 
-		api.getAssignedInProgressIssuess(projectKey,
-				new IssuesListener(adapter), new IssuesErrorListener(
-						errorMessage));
+		errorView.setVisibility(View.GONE);
+		api.getAssignedInProgressIssuess(projectKey, new IssuesListener(
+				adapter, swipeRefresh), new IssuesErrorListener(swipeRefresh,
+				errorView));
+	}
+
+	@Override
+	public void onRefresh() {
+		loadIssues();
 	}
 
 	@Override
