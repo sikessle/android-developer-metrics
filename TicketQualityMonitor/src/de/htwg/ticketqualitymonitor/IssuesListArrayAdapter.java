@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +71,7 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 
 		// Populate the data into the template view using the data object
 		issueItemName.setText(issue.getKey());
-		issueItemDescription.setText(buildDescription(issue));
+		issueItemDescription.setText(Html.fromHtml(buildDescription(issue)));
 	}
 
 	private String buildDescription(JiraIssue issue) {
@@ -78,11 +79,10 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(ctx.getString(R.string.hours_per_update));
-		sb.append(" ");
-		sb.append(String.format("%.2f", issue.getSpentTimeHoursPerUpdate()));
+		sb.append(String.format("<b>%.2f</b>",
+				issue.getSpentTimeHoursPerUpdate()));
 		sb.append("\n");
-		sb.append(ctx.getString(R.string.assignee));
-		sb.append(": ");
+		sb.append("<b>" + ctx.getString(R.string.assignee) + "</b>");
 		sb.append(issue.getAssignee());
 
 		return sb.toString();

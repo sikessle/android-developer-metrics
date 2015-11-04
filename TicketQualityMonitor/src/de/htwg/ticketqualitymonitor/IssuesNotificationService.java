@@ -1,7 +1,11 @@
 package de.htwg.ticketqualitymonitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
 
 import de.htwg.ticketqualitymonitor.model.JiraApi;
 import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
@@ -26,17 +30,26 @@ public class IssuesNotificationService extends IntentService {
 	private JiraApi api;
 	private String projectKey;
 
-	private Listener<JiraIssue[]> issuesListener;
-	private ErrorListener errorListener;
+	private final Listener<JiraIssue[]> issuesListener;
+	private final ErrorListener errorListener;
+	private double thresholdCritical;
 
 	public IssuesNotificationService() {
 		super("Jira Issues Notification Service");
+
+		errorListener = new NotificationIssuesErrorListener();
+		issuesListener = new NotificationIssuesListener();
 	}
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		Log.i(IssuesNotificationService.class.getSimpleName(),
 				"onHandleIntent called.");
+
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		thresholdCritical = Double.parseDouble(prefs.getString(
+				getString(R.string.key_color_threshold_yellow), "2.0"));
 
 		setUpApiAndProjectKey();
 		loadIssues();
@@ -55,10 +68,8 @@ public class IssuesNotificationService extends IntentService {
 	}
 
 	private void loadIssues() {
-		sendNotification();
-		// TODO notify..
-		// api.getAssignedInProgressIssuess(projectKey, issuesListener,
-		// errorListener);
+		api.getAssignedInProgressIssuess(projectKey, issuesListener,
+				errorListener);
 	}
 
 	private void sendNotification() {
@@ -76,6 +87,38 @@ public class IssuesNotificationService extends IntentService {
 		notifi.flags |= Notification.FLAG_AUTO_CANCEL;
 
 		manager.notify(0, notifi);
+	}
+
+	private class NotificationIssuesListener implements Listener<JiraIssue[]> {
+
+		private List<String> previousCriticalIssues = new ArrayList<>();
+
+		@Override
+		public void onResponse(JiraIssue[] issues) {
+			final List<String> currentCriticalIssues = new ArrayList<>();
+
+			for (final JiraIssue issue : issues) {
+				if (issue.getSpentTimeHoursPerUpdate() > thresholdCritical) {
+					currentCriticalIssues.add(issue.getKey());
+				}
+			}
+
+			if (!previousCriticalIssues.equals(currentCriticalIssues)) {
+				sendNotification();
+			}
+			previousCriticalIssues = currentCriticalIssues;
+		}
+
+	}
+
+	private class NotificationIssuesErrorListener implements ErrorListener {
+
+		@Override
+		public void onErrorResponse(VolleyError error) {
+			Log.e(NotificationIssuesErrorListener.class.getSimpleName(),
+					error.toString());
+		}
+
 	}
 
 }

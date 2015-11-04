@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -27,8 +26,7 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
  * Starting activity which display a list of assigned issues and their remaining
  * costs update rate.
  */
-public class MainActivity extends Activity implements
-		OnSharedPreferenceChangeListener, OnRefreshListener {
+public class MainActivity extends Activity implements OnRefreshListener {
 
 	private ArrayAdapter<JiraIssue> adapter;
 	private SwipeRefreshLayout swipeRefresh;
@@ -50,10 +48,6 @@ public class MainActivity extends Activity implements
 		setUpNotificationManager();
 		connectAdapter();
 		setupRefreshHandler();
-
-		// Listen to preference changes
-		PreferenceManager.getDefaultSharedPreferences(this)
-				.registerOnSharedPreferenceChangeListener(this);
 	}
 
 	private void setupRefreshHandler() {
@@ -134,14 +128,6 @@ public class MainActivity extends Activity implements
 	}
 
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-		api = JiraApiFactory.createInstance(this);
-		connectAdapter();
-		loadIssues();
-		setUpNotificationManager();
-	}
-
-	@Override
 	protected void onPause() {
 		super.onPause();
 
@@ -154,6 +140,11 @@ public class MainActivity extends Activity implements
 	@Override
 	protected void onRestart() {
 		super.onRestart();
+
+		api = JiraApiFactory.createInstance(this);
+		connectAdapter();
+		loadIssues();
+		setUpNotificationManager();
 
 		// Cancel notification service if app is active
 		notificationManager.stop(this);

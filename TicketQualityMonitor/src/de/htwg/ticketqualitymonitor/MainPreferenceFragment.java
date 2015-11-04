@@ -16,7 +16,7 @@ import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
  * items.
  */
 public class MainPreferenceFragment extends PreferenceFragment implements
-		OnSharedPreferenceChangeListener, OnPreferenceClickListener {
+		OnPreferenceClickListener, OnSharedPreferenceChangeListener {
 
 	private JiraApi api;
 
@@ -24,22 +24,42 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(getActivity())
 				.registerOnSharedPreferenceChangeListener(this);
-		api = JiraApiFactory.createInstance(getActivity());
 
 		// Load the preferences from an XML resource
 		addPreferencesFromResource(R.xml.preferences);
 
+		init();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		PreferenceManager.getDefaultSharedPreferences(getActivity())
+				.registerOnSharedPreferenceChangeListener(this);
+
+		init();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		PreferenceManager.getDefaultSharedPreferences(getActivity())
+				.unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	private void init() {
+		api = JiraApiFactory.createInstance(getActivity());
 		initProjectList();
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		api = JiraApiFactory.createInstance(getActivity());
-		initProjectList();
+		init();
 	}
 
 	@Override

@@ -34,8 +34,8 @@
     <string name="preference_default_issues_refresh_rate">1</string>
     <string name="preference_summary_issues_refresh_rate">How often the issues list will be refreshed if the app is open.</string>
     <string name="loading">Loading ..</string>
-    <string name="hours_per_update">hours spent per update</string>
-    <string name="assignee">Assignee</string>
+    <string name="hours_per_update">Average hours spent per update:&#160;</string>
+    <string name="assignee">Assignee:&#160;</string>
     <string name="issues_error">Failed to load issues. Please check your settings.</string>
     
     <string name="notification_title">New critical issues found</string>
