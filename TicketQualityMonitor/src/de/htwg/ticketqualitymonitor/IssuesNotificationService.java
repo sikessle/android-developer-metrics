@@ -84,15 +84,17 @@ public class IssuesNotificationService extends IntentService {
 				.setSmallIcon(R.drawable.ic_launcher).build();
 		final NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-		// hide the notification after its selected
+		// hide the notification after it is selected
 		notifi.flags |= Notification.FLAG_AUTO_CANCEL;
 
 		manager.notify(0, notifi);
+		Log.i(IssuesNotificationService.class.getSimpleName(),
+				"Notification sent");
 	}
 
 	private class NotificationIssuesListener implements Listener<JiraIssue[]> {
 
-		private Set<String> previousCriticalIssues = new HashSet<>();
+		private final Set<String> previousCriticalIssues = new HashSet<>();
 
 		@Override
 		public void onResponse(JiraIssue[] issues) {
@@ -104,12 +106,11 @@ public class IssuesNotificationService extends IntentService {
 				}
 			}
 
-			if (!currentCriticalIssues.containsAll(previousCriticalIssues)) {
+			if (!previousCriticalIssues.containsAll(currentCriticalIssues)) {
+				previousCriticalIssues.addAll(currentCriticalIssues);
 				sendNotification();
 			}
-			previousCriticalIssues = currentCriticalIssues;
 		}
-
 	}
 
 	private class NotificationIssuesErrorListener implements ErrorListener {

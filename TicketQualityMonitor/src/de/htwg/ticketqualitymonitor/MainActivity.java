@@ -36,38 +36,63 @@ public class MainActivity extends Activity implements OnRefreshListener {
 	private Handler refreshHandler;
 	private Runnable loadIssuesRunnable;
 	private boolean enableNotifications;
+	private boolean autoRefreshCancelled;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		api = JiraApiFactory.createInstance(this);
 		issuesList = ((ListView) findViewById(R.id.issuesList));
+
 		setupPullToRefresh();
-		setUpNotificationManager();
-		connectAdapter();
-		setupRefreshHandler();
 	}
 
-	private void setupRefreshHandler() {
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		stopAutoRefresh();
+		// Start notification service if app is paused
+		if (enableNotifications) {
+			notificationManager.start(this);
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onRestart();
+
+		api = JiraApiFactory.createInstance(this);
+		connectListAdapter();
+		setUpNotificationManager();
+		startAutoRefresh();
+		// Cancel notification service if app is active
+		notificationManager.stop(this);
+	}
+
+	private void startAutoRefresh() {
+		autoRefreshCancelled = false;
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
-
 		final int interval = Integer.parseInt(prefs.getString(
 				getString(R.string.key_issues_refresh_rate), "1"));
 		refreshHandler = new Handler();
 		loadIssuesRunnable = new Runnable() {
-
 			@Override
 			public void run() {
 				loadIssues();
-				refreshHandler.postDelayed(loadIssuesRunnable,
-						TimeUnit.MINUTES.toMillis(interval));
+				if (!autoRefreshCancelled) {
+					refreshHandler.postDelayed(loadIssuesRunnable,
+							TimeUnit.MINUTES.toMillis(interval));
+				}
 			}
 		};
-		refreshHandler.postDelayed(loadIssuesRunnable,
-				TimeUnit.MINUTES.toMillis(interval));
+		refreshHandler.post(loadIssuesRunnable);
+	}
+
+	private void stopAutoRefresh() {
+		autoRefreshCancelled = true;
 	}
 
 	private void setupPullToRefresh() {
@@ -83,21 +108,13 @@ public class MainActivity extends Activity implements OnRefreshListener {
 				getString(R.string.key_notifications_interval), "1"));
 		notificationManager = new NotificationServiceManager(delay,
 				IssuesNotificationService.class);
-		notificationManager.stop(this);
 		enableNotifications = prefs.getBoolean(
 				getString(R.string.key_enable_notifications), false);
 	}
 
-	private void connectAdapter() {
+	private void connectListAdapter() {
 		adapter = new IssuesListArrayAdapter(this, new JiraIssue[] {});
 		issuesList.setAdapter(adapter);
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-
-		loadIssues();
 	}
 
 	private void loadIssues() {
@@ -125,29 +142,6 @@ public class MainActivity extends Activity implements OnRefreshListener {
 	@Override
 	public void onRefresh() {
 		loadIssues();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		// Start notification service if app is paused
-		if (enableNotifications) {
-			notificationManager.start(this);
-		}
-	}
-
-	@Override
-	protected void onRestart() {
-		super.onRestart();
-
-		api = JiraApiFactory.createInstance(this);
-		connectAdapter();
-		loadIssues();
-		setUpNotificationManager();
-
-		// Cancel notification service if app is active
-		notificationManager.stop(this);
 	}
 
 	@Override

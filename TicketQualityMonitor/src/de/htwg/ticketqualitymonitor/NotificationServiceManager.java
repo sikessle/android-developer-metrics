@@ -11,7 +11,6 @@ import android.util.Log;
 
 public class NotificationServiceManager {
 
-	private PendingIntent notificationService;
 	private final long intervalMillis;
 	private final Class<? extends Service> serviceClass;
 
@@ -32,14 +31,12 @@ public class NotificationServiceManager {
 	 * Starts the service.
 	 */
 	public void start(Context context) {
-		stop(context);
-		final Intent serviceIntent = new Intent(context, serviceClass);
-		notificationService = PendingIntent.getService(context, 0,
-				serviceIntent, 0);
-		getAlarmManager(context)
-				.setInexactRepeating(AlarmManager.RTC,
-						System.currentTimeMillis(), intervalMillis,
-						notificationService);
+		final PendingIntent pendingIntent = PendingIntent.getService(context,
+				0, new Intent(context, serviceClass),
+				PendingIntent.FLAG_CANCEL_CURRENT);
+		getAlarmManager(context).setInexactRepeating(AlarmManager.RTC,
+				System.currentTimeMillis() + intervalMillis, intervalMillis,
+				pendingIntent);
 		Log.i(NotificationServiceManager.class.getSimpleName(),
 				"Notification service started.");
 	}
@@ -48,9 +45,13 @@ public class NotificationServiceManager {
 	 * Stops the service.
 	 */
 	public void stop(Context context) {
-		getAlarmManager(context).cancel(notificationService);
+		final PendingIntent pendingIntent = PendingIntent.getService(context,
+				0, new Intent(context, serviceClass),
+				PendingIntent.FLAG_CANCEL_CURRENT);
+
+		getAlarmManager(context).cancel(pendingIntent);
 		Log.i(NotificationServiceManager.class.getSimpleName(),
-				"Notification service canceled.");
+				"Notification service cancelled.");
 	}
 
 	private AlarmManager getAlarmManager(Context context) {
