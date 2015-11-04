@@ -3,6 +3,9 @@ package de.htwg.ticketqualitymonitor;
 import java.util.Comparator;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +19,25 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
 public class JiraIssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 
 	private final Comparator<JiraIssue> comparator = new JiraIssueComparator();
+	private final int colorGreen;
+	private final int colorYellow;
+	private final int colorRed;
+	private final float thresholdGreen;
+	private final float thresholdYellow;
 
 	public JiraIssuesListArrayAdapter(Context context, JiraIssue[] issues) {
 		super(context, 0, issues);
+		final Resources resources = context.getResources();
+		colorGreen = resources.getColor(R.color.issue_green);
+		colorYellow = resources.getColor(R.color.issue_yellow);
+		colorRed = resources.getColor(R.color.issue_red);
+
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		thresholdGreen = prefs.getFloat(
+				context.getString(R.string.key_color_threshold_green), 1f);
+		thresholdYellow = prefs.getFloat(
+				context.getString(R.string.key_color_threshold_yellow), 1f);
 	}
 
 	@Override
@@ -31,20 +50,33 @@ public class JiraIssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 					R.layout.item_issue, parent, false);
 		}
 		fillView(convertView, issue);
+		setColor(convertView, issue);
 
 		return convertView;
 	}
 
-	private void fillView(View convertView, JiraIssue issue) {
+	private void fillView(View viewItemParent, JiraIssue issue) {
 		// Lookup view for data population
-		final TextView issueItemName = (TextView) convertView
+		final TextView issueItemName = (TextView) viewItemParent
 				.findViewById(R.id.issueItemName);
-		final TextView issueItemDescription = (TextView) convertView
+		final TextView issueItemDescription = (TextView) viewItemParent
 				.findViewById(R.id.issueItemDescription);
 
 		// Populate the data into the template view using the data object
 		issueItemName.setText(issue.getKey());
 		issueItemDescription.setText(buildDescription(issue));
+	}
+
+	private void setColor(View viewItemParent, JiraIssue issue) {
+		final double hoursPerUpdate = issue.getSpentTimeHoursPerUpdate();
+
+		if (hoursPerUpdate <= thresholdGreen) {
+			viewItemParent.setBackgroundColor(colorGreen);
+		} else if (hoursPerUpdate <= thresholdYellow) {
+			viewItemParent.setBackgroundColor(colorYellow);
+		} else {
+			viewItemParent.setBackgroundColor(colorRed);
+		}
 	}
 
 	private String buildDescription(JiraIssue issue) {

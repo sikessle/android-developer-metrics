@@ -53,7 +53,7 @@ public class MainActivity extends Activity implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 		api = JiraApiFactory.createInstance(this);
-		// TODO relaod issues list
+		// TODO relaod issues list with new adapter! (because of colors etc..)
 	}
 
 	@Override
