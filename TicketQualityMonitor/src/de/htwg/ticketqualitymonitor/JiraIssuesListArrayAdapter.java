@@ -22,8 +22,8 @@ public class JiraIssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 	private final int colorGreen;
 	private final int colorYellow;
 	private final int colorRed;
-	private final float thresholdGreen;
-	private final float thresholdYellow;
+	private final double thresholdGreen;
+	private final double thresholdYellow;
 
 	public JiraIssuesListArrayAdapter(Context context, JiraIssue[] issues) {
 		super(context, 0, issues);
@@ -34,10 +34,10 @@ public class JiraIssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		thresholdGreen = prefs.getFloat(
-				context.getString(R.string.key_color_threshold_green), 1f);
-		thresholdYellow = prefs.getFloat(
-				context.getString(R.string.key_color_threshold_yellow), 1f);
+		thresholdGreen = Double.parseDouble(prefs.getString(
+				context.getString(R.string.key_color_threshold_green), "1.0"));
+		thresholdYellow = Double.parseDouble(prefs.getString(
+				context.getString(R.string.key_color_threshold_yellow), "2.0"));
 	}
 
 	@Override
