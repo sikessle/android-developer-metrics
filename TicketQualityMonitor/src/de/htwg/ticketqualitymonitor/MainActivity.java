@@ -11,6 +11,8 @@ import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,6 +31,7 @@ public class MainActivity extends Activity implements
 	private SwipeRefreshLayout swipeRefresh;
 	private JiraApi api;
 	private NotificationServiceManager notificationManager;
+	private ListView issuesList;
 	private static final long SERVICE_INTERVAL_MINUTES = 1;
 
 	@Override
@@ -36,8 +39,9 @@ public class MainActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		setupPullToRefresh();
 		api = JiraApiFactory.createInstance(this);
+		issuesList = ((ListView) findViewById(R.id.issuesList));
+		setupPullToRefresh();
 		setUpNotificationManager();
 		connectAdapter();
 
@@ -49,6 +53,7 @@ public class MainActivity extends Activity implements
 	private void setupPullToRefresh() {
 		swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 		swipeRefresh.setOnRefreshListener(this);
+		issuesList.setOnScrollListener(new DisableRefreshOnNormalScrolling());
 	}
 
 	private void setUpNotificationManager() {
@@ -59,7 +64,7 @@ public class MainActivity extends Activity implements
 
 	private void connectAdapter() {
 		adapter = new IssuesListArrayAdapter(this, new JiraIssue[] {});
-		((ListView) findViewById(R.id.issuesList)).setAdapter(adapter);
+		issuesList.setAdapter(adapter);
 	}
 
 	@Override
@@ -139,6 +144,24 @@ public class MainActivity extends Activity implements
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private class DisableRefreshOnNormalScrolling implements OnScrollListener {
+
+		@Override
+		public void onScrollStateChanged(AbsListView view, int scrollState) {
+		}
+
+		@Override
+		public void onScroll(AbsListView view, int firstVisibleItem,
+				int visibleItemCount, int totalItemCount) {
+			final int topRowVerticalPosition = (issuesList == null || issuesList
+					.getChildCount() == 0) ? 0 : issuesList.getChildAt(0)
+					.getTop();
+
+			swipeRefresh.setEnabled(firstVisibleItem == 0
+					&& topRowVerticalPosition >= 0);
+		}
 	}
 
 }
