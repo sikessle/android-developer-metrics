@@ -55,11 +55,12 @@ public class JiraApi {
 	 */
 	public JiraApi(String uri, String user, String pass,
 			RequestQueue requestQueue) {
+
 		this.uri = completeUri(uri);
 		this.user = user;
 		this.pass = pass;
 		this.requestQueue = requestQueue;
-		credentials = new HashMap<String, String>();
+		credentials = new HashMap<>();
 		initBasicAuthHeader();
 		retryPolicy = new DefaultRetryPolicy(TIMEOUT_MS, MAX_RETRIES,
 				DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
@@ -131,7 +132,7 @@ public class JiraApi {
 			Class<T> clazz, Listener<T> listener, ErrorListener errorListener) {
 		Map<String, String> headers;
 		synchronized (credentials) {
-			headers = new HashMap<String, String>(credentials);
+			headers = new HashMap<>(credentials);
 		}
 		final GsonRequest<T> request = new GsonRequest<T>(uri + resource,
 				clazz, headers, listener, errorListener);

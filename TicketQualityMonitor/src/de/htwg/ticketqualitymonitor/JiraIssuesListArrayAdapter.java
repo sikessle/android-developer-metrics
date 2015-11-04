@@ -30,20 +30,36 @@ public class JiraIssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 			convertView = LayoutInflater.from(getContext()).inflate(
 					R.layout.item_issue, parent, false);
 		}
+		fillView(convertView, issue);
+
+		return convertView;
+	}
+
+	private void fillView(View convertView, JiraIssue issue) {
 		// Lookup view for data population
 		final TextView issueItemName = (TextView) convertView
 				.findViewById(R.id.issueItemName);
 		final TextView issueItemDescription = (TextView) convertView
 				.findViewById(R.id.issueItemDescription);
+
 		// Populate the data into the template view using the data object
 		issueItemName.setText(issue.getKey());
-		String description = getContext().getString(R.string.hours_per_update);
-		description += " " + issue.getSpentTimeHoursPerUpdate();
-		description += "\n" + getContext().getString(R.string.assignee) + ": "
-				+ issue.getAssignee();
-		issueItemDescription.setText(description);
-		// Return the completed view to render on screen
-		return convertView;
+		issueItemDescription.setText(buildDescription(issue));
+	}
+
+	private String buildDescription(JiraIssue issue) {
+		final Context ctx = getContext();
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append(ctx.getString(R.string.hours_per_update));
+		sb.append(" ");
+		sb.append(issue.getSpentTimeHoursPerUpdate());
+		sb.append("\n");
+		sb.append(ctx.getString(R.string.assignee));
+		sb.append(": ");
+		sb.append(issue.getAssignee());
+
+		return sb.toString();
 	}
 
 	@Override

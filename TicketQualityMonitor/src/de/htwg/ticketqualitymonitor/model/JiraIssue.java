@@ -1,5 +1,7 @@
 package de.htwg.ticketqualitymonitor.model;
 
+import java.util.concurrent.TimeUnit;
+
 import net.jcip.annotations.Immutable;
 
 /**
@@ -27,7 +29,7 @@ public class JiraIssue {
 	}
 
 	public double getSpentTimeHoursPerUpdate() {
-		return fields.timetracking.timeSpentSeconds / 60. / 60.
+		return TimeUnit.SECONDS.toHours(fields.timetracking.timeSpentSeconds)
 				/ fields.worklog.worklogs.length;
 	}
 
