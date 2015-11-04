@@ -1,10 +1,13 @@
 package de.htwg.ticketqualitymonitor;
 
+import java.util.concurrent.TimeUnit;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -32,7 +35,8 @@ public class MainActivity extends Activity implements
 	private JiraApi api;
 	private NotificationServiceManager notificationManager;
 	private ListView issuesList;
-	private static final long SERVICE_INTERVAL_MINUTES = 1;
+	private Handler refreshHandler;
+	private Runnable loadIssuesRunnable;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +48,28 @@ public class MainActivity extends Activity implements
 		setupPullToRefresh();
 		setUpNotificationManager();
 		connectAdapter();
+		setupRefreshHandler();
 
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
+	}
+
+	private void setupRefreshHandler() {
+		final int interval = getResources().getInteger(
+				R.integer.issues_refresh_interval_minutes);
+		refreshHandler = new Handler();
+		loadIssuesRunnable = new Runnable() {
+
+			@Override
+			public void run() {
+				loadIssues();
+				refreshHandler.postDelayed(loadIssuesRunnable,
+						TimeUnit.MINUTES.toMillis(interval));
+			}
+		};
+		refreshHandler.postDelayed(loadIssuesRunnable,
+				TimeUnit.MINUTES.toMillis(interval));
 	}
 
 	private void setupPullToRefresh() {
@@ -57,8 +79,10 @@ public class MainActivity extends Activity implements
 	}
 
 	private void setUpNotificationManager() {
-		notificationManager = new NotificationServiceManager(
-				SERVICE_INTERVAL_MINUTES, IssuesNotificationService.class);
+		final int delay = getResources().getInteger(
+				R.integer.notificaton_delay_minutes);
+		notificationManager = new NotificationServiceManager(delay,
+				IssuesNotificationService.class);
 		notificationManager.stop(this);
 	}
 
