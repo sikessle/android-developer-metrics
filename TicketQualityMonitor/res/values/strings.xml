@@ -27,6 +27,9 @@
     <string name="hours_per_update">hours spent per update</string>
     <string name="assignee">Assignee</string>
     <string name="issues_error">Failed to load issues. Please check your settings.</string>
+    
+    <string name="notification_title">New critical issues found</string>
+    <string name="notification_description">Tap here to view them</string>
 
     <string-array name="preference_default_project_entries"></string-array>
     <string-array name="preference_default_project_values"></string-array>
