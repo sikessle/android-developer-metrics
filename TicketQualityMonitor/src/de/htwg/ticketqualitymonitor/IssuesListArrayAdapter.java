@@ -20,7 +20,7 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
  */
 public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 
-	private final Comparator<JiraIssue> comparator = new JiraIssueComparator();
+	private final Comparator<JiraIssue> comparator = new HighestFirstComparator();
 	private final int colorGreen;
 	private final int colorYellow;
 	private final int colorRed;
@@ -32,7 +32,7 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 		// convert an array to an AbstractList which cannot be modified later
 		// on (this would render the add, addAll etc. methods useless).
 		super(context, 0, new ArrayList<JiraIssue>(Arrays.asList(issues)));
-		
+
 		final Resources resources = context.getResources();
 		colorGreen = resources.getColor(R.color.issue_green);
 		colorYellow = resources.getColor(R.color.issue_yellow);
@@ -103,21 +103,22 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 
 	@Override
 	public void notifyDataSetChanged() {
-		// TODO sort(comparator);
+		setNotifyOnChange(false);
+		sort(comparator);
 		super.notifyDataSetChanged();
 	}
 
-	private class JiraIssueComparator implements Comparator<JiraIssue> {
+	private class HighestFirstComparator implements Comparator<JiraIssue> {
 
 		@Override
 		public int compare(JiraIssue lhs, JiraIssue rhs) {
 			final double lhsRate = lhs.getSpentTimeHoursPerUpdate();
-			final double rhsRate = lhs.getSpentTimeHoursPerUpdate();
+			final double rhsRate = rhs.getSpentTimeHoursPerUpdate();
 
-			if (lhsRate < rhsRate) {
+			if (lhsRate > rhsRate) {
 				return -1;
 			}
-			if (rhsRate > lhsRate) {
+			if (rhsRate < lhsRate) {
 				return 1;
 			}
 			return 0;
