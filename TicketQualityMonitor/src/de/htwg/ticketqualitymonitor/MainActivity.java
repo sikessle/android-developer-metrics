@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListAdapter;
@@ -24,6 +25,7 @@ public class MainActivity extends Activity implements
 
 	private JiraApi api;
 	private ListAdapter adapter;
+	private Intent serviceIntent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,16 +34,12 @@ public class MainActivity extends Activity implements
 
 		showProgressBarOnEmptyIssuesList();
 		connectAdapter();
+		startIssuesService();
 
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
 		api = JiraApiFactory.createInstance(this);
-	}
-
-	private void connectAdapter() {
-		adapter = new JiraIssuesListArrayAdapter(this, new JiraIssue[] {});
-		((ListView) findViewById(R.id.issuesList)).setAdapter(adapter);
 	}
 
 	private void showProgressBarOnEmptyIssuesList() {
@@ -50,10 +48,28 @@ public class MainActivity extends Activity implements
 		listView.setEmptyView(progressBar);
 	}
 
+	private void connectAdapter() {
+		adapter = new JiraIssuesListArrayAdapter(this, new JiraIssue[] {});
+		((ListView) findViewById(R.id.issuesList)).setAdapter(adapter);
+	}
+
+	private void startIssuesService() {
+		// TODO do that via a button etc..
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		final String projectKey = prefs.getString(
+				getString(R.string.key_project), "");
+		serviceIntent = new Intent(this, IssuesService.class);
+		serviceIntent.putExtra(IssuesService.INTENT_KEY_PROJECT, projectKey);
+		startService(serviceIntent);
+		Log.i(MainActivity.class.getSimpleName(), "Intent to start service started");
+	}
+
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 		api = JiraApiFactory.createInstance(this);
 		// TODO relaod issues list with new adapter! (because of colors etc..)
+		// TODO also restart service
 	}
 
 	@Override

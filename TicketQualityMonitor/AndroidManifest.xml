@@ -28,6 +28,10 @@
         </activity>
         <activity android:name=".MainPreferenceActivity" >
         </activity>
+
+        <service
+            android:name=".IssuesService"
+            android:exported="false" />
     </application>
 
 </manifest>
