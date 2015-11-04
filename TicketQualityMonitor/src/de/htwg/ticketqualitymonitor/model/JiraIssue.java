@@ -29,11 +29,11 @@ public class JiraIssue {
 	}
 
 	public double getSpentTimeHoursPerUpdate() {
-		if (fields.worklog.worklogs.length == 0) {
-			return 0;
+		if (fields.worklog.total == 0) {
+			return 0.;
 		}
-		return TimeUnit.SECONDS.toHours(fields.timetracking.timeSpentSeconds)
-				/ fields.worklog.worklogs.length;
+		return TimeUnit.SECONDS.toMinutes(fields.timetracking.timeSpentSeconds)
+				/ 60. / fields.worklog.total;
 	}
 
 	public static class Fields {
@@ -53,14 +53,9 @@ public class JiraIssue {
 	}
 
 	public static class Worklog {
-		private WorklogItem[] worklogs;
+		private int total;
 
 		public Worklog() {
-		}
-	}
-
-	public static class WorklogItem {
-		public WorklogItem() {
 		}
 	}
 

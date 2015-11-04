@@ -79,7 +79,7 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 
 		sb.append(ctx.getString(R.string.hours_per_update));
 		sb.append(" ");
-		sb.append(issue.getSpentTimeHoursPerUpdate());
+		sb.append(String.format("%.2f", issue.getSpentTimeHoursPerUpdate()));
 		sb.append("\n");
 		sb.append(ctx.getString(R.string.assignee));
 		sb.append(": ");
