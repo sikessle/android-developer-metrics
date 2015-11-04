@@ -23,6 +23,7 @@ public class MainActivity extends Activity implements
 		OnSharedPreferenceChangeListener {
 
 	private JiraApi api;
+	private ListAdapter adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,7 @@ public class MainActivity extends Activity implements
 		setContentView(R.layout.activity_main);
 
 		showProgressBarOnEmptyIssuesList();
-		mockList();
+		connectAdapter();
 
 		// Listen to preference changes
 		PreferenceManager.getDefaultSharedPreferences(this)
@@ -38,11 +39,8 @@ public class MainActivity extends Activity implements
 		api = JiraApiFactory.createInstance(this);
 	}
 
-	private void mockList() {
-		final JiraIssue[] objects = new JiraIssue[] { new JiraIssue(),
-				new JiraIssue(), new JiraIssue() };
-		final ListAdapter adapter = new JiraIssuesListArrayAdapter(this,
-				objects);
+	private void connectAdapter() {
+		adapter = new JiraIssuesListArrayAdapter(this, new JiraIssue[] {});
 		((ListView) findViewById(R.id.issuesList)).setAdapter(adapter);
 	}
 
