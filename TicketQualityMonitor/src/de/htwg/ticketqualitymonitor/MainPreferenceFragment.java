@@ -69,6 +69,7 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 		final String keyUri = getString(R.string.key_jira_host);
 		final String keyUser = getString(R.string.key_jira_username);
 		final String keyPass = getString(R.string.key_jira_password);
+		final String keyProject = getString(R.string.key_project);
 		final String keyThresholdGreen = getString(R.string.key_color_threshold_green);
 		final String keyThresholdYellow = getString(R.string.key_color_threshold_yellow);
 		final String keyEnableNotifications = getString(R.string.key_enable_notifications);
@@ -77,7 +78,8 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 			initProjectList();
 		}
 
-		if (keyThresholdGreen.equals(key) || keyThresholdYellow.equals(key)) {
+		if (keyThresholdGreen.equals(key) || keyThresholdYellow.equals(key)
+				|| keyProject.equals(key)) {
 			ViewedIssuesHandler.clearSeenIssues(getActivity());
 		}
 
