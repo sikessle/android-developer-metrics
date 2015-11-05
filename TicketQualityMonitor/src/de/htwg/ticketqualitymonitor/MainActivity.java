@@ -100,16 +100,20 @@ public class MainActivity extends Activity implements OnRefreshListener {
 		final IssuesErrorListener errorListener = new IssuesErrorListener(
 				swipeRefresh, errorView);
 
+		showLoadingIndicator();
+
+		errorView.setVisibility(View.GONE);
+		api.getAssignedInProgressIssuess(getProjectKey(), listener,
+				errorListener);
+	}
+
+	private void showLoadingIndicator() {
 		swipeRefresh.post(new Runnable() {
 			@Override
 			public void run() {
 				swipeRefresh.setRefreshing(true);
 			}
 		});
-
-		errorView.setVisibility(View.GONE);
-		api.getAssignedInProgressIssuess(getProjectKey(), listener,
-				errorListener);
 	}
 
 	private String getProjectKey() {
