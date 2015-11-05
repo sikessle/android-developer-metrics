@@ -1,5 +1,8 @@
 package de.htwg.ticketqualitymonitor;
 
+import java.util.Map.Entry;
+import java.util.Set;
+
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -61,14 +64,24 @@ public class CriticalIssuesFetchService extends IntentService {
 				errorListener);
 	}
 
-	private void sendNotification() {
+	private void sendNotification(Set<Entry<String, Double>> newIssues) {
 		final PendingIntent startAppIntent = PendingIntent.getActivity(this, 0,
 				new Intent(this, MainActivity.class), 0);
+		final StringBuilder sb = new StringBuilder();
+
+		for (final Entry<String, Double> issue : newIssues) {
+			sb.append(issue.getKey()).append(" | ");
+		}
+		sb.replace(sb.length() - 3, sb.length(), "");
+		final String issuesList = sb.toString();
 
 		final Notification notifi = new NotificationCompat.Builder(this)
 				.setContentTitle(getString(R.string.notification_title))
 				.setContentText(getString(R.string.notification_description))
 				.setContentIntent(startAppIntent)
+				.setStyle(
+						new NotificationCompat.BigTextStyle()
+								.bigText(issuesList))
 				.setSmallIcon(R.drawable.ic_launcher).build();
 		final NotificationManager manager = (NotificationManager) getSystemService(IntentService.NOTIFICATION_SERVICE);
 
@@ -93,8 +106,11 @@ public class CriticalIssuesFetchService extends IntentService {
 					.allRelevantIssuesSeen(context, issues);
 
 			if (!allRelevantIssuesSeen) {
+				final Set<Entry<String, Double>> newIssues = ViewedIssuesHandler
+						.getRelevantIssues(CriticalIssuesFetchService.this,
+								issues);
 				ViewedIssuesHandler.markRelevantIssuesAsSeen(context, issues);
-				sendNotification();
+				sendNotification(newIssues);
 			} else {
 				Log.i(CriticalIssuesFetchService.class.getSimpleName(),
 						"No new critical issues found.");

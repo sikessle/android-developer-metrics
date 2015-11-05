@@ -65,7 +65,6 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-
 		final String keyUri = getString(R.string.key_jira_host);
 		final String keyUser = getString(R.string.key_jira_username);
 		final String keyPass = getString(R.string.key_jira_password);
@@ -86,6 +85,12 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 		if (keyEnableNotifications.equals(key)) {
 			NotificationServiceManager
 					.startOrStopBasedOnPreference(getActivity());
+		}
+
+		if (keyProject.equals(key)) {
+			final Preference pref = findPreference(key);
+			final ListPreference listPref = (ListPreference) pref;
+			pref.setSummary(listPref.getEntry());
 		}
 	}
 

@@ -1,6 +1,8 @@
 package de.htwg.ticketqualitymonitor;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import net.jcip.annotations.Immutable;
@@ -20,21 +22,23 @@ public class ViewedIssuesHandler {
 
 	private static final String STORE_VIEWED_ISSUES_KEY = "de.htwg.ticketqualitymonitor.viewed_issues";
 
-	private static Set<String> getRelevantIssues(JiraIssue[] issues,
-			double thresholdGreen, double thresholdYellow) {
-		final Set<String> criticalIssues = new HashSet<>();
+	public static Set<Entry<String, Double>> getRelevantIssues(Context context,
+			JiraIssue[] issues) {
+		final double thresholdGreen = getThresholdGreen(context);
+		final double thresholdYellow = getThresholdYellow(context);
+		final Map<String, Double> criticalIssues = new HashMap<>();
 		JiraIssueCategory category;
 
 		for (final JiraIssue issue : issues) {
 			category = JiraIssueCategory.fromIssue(issue, thresholdGreen,
 					thresholdYellow);
 			if (category == JiraIssueCategory.RED) {
-				criticalIssues.add(issue.getKey()
-						+ issue.getSpentTimeHoursPerUpdate());
+				criticalIssues.put(issue.getKey(),
+						issue.getSpentTimeHoursPerUpdate());
 			}
 		}
 
-		return criticalIssues;
+		return criticalIssues.entrySet();
 	}
 
 	private static SharedPreferences getStore(Context context) {
@@ -55,15 +59,13 @@ public class ViewedIssuesHandler {
 	 */
 	public static void markRelevantIssuesAsSeen(Context context,
 			JiraIssue[] issues) {
-		final double thresholdGreen = getThresholdGreen(context);
-		final double thresholdYellow = getThresholdYellow(context);
 
-		final Set<String> relevantIssues = getRelevantIssues(issues,
-				thresholdGreen, thresholdYellow);
+		final Set<Entry<String, Double>> relevantIssues = getRelevantIssues(
+				context, issues);
 		final Editor editor = getStore(context).edit();
 
-		for (final String issueIdent : relevantIssues) {
-			editor.putString(issueIdent, ".");
+		for (final Map.Entry<String, Double> entry : relevantIssues) {
+			editor.putString(getUniqueKey(entry), ".");
 		}
 
 		editor.apply();
@@ -78,14 +80,20 @@ public class ViewedIssuesHandler {
 	public static boolean allRelevantIssuesSeen(Context context,
 			JiraIssue[] issues) {
 
-		final double thresholdGreen = getThresholdGreen(context);
-		final double thresholdYellow = getThresholdYellow(context);
-
-		final Set<String> relevantIssues = getRelevantIssues(issues,
-				thresholdGreen, thresholdYellow);
+		final Set<Entry<String, Double>> relevantIssues = getRelevantIssues(
+				context, issues);
 		final SharedPreferences store = getStore(context);
 
-		return store.getAll().keySet().containsAll(relevantIssues);
+		for (final Entry<String, Double> entry : relevantIssues) {
+			if (!store.contains(getUniqueKey(entry))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static String getUniqueKey(Entry<String, Double> entry) {
+		return entry.getKey() + entry.getValue();
 	}
 
 	/**
