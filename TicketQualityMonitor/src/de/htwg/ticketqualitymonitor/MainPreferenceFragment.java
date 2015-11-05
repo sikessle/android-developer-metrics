@@ -61,10 +61,7 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 			String key) {
 		init();
 
-		getActivity()
-				.getSharedPreferences(
-						NotificationServiceManager.VIEWED_ISSUE_KEYS, 0).edit()
-				.clear().apply();
+		ViewedIssuesHandler.getStore(getActivity()).edit().clear().apply();
 	}
 
 	@Override

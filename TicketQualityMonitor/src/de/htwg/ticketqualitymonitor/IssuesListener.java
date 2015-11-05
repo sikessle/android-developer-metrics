@@ -1,9 +1,6 @@
 package de.htwg.ticketqualitymonitor;
 
-import java.util.Set;
-
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -47,18 +44,8 @@ public class IssuesListener implements Listener<JiraIssue[]> {
 		adapter.addAll(issues);
 		swipeRefresh.setRefreshing(false);
 
-		final Editor store = adapter
-				.getContext()
-				.getSharedPreferences(
-						NotificationServiceManager.VIEWED_ISSUE_KEYS, 0).edit();
-
-		final Set<String> relevantIssues = ViewedIssuesHandler
-				.getRelevantUniqueIssueIdents(issues, thresholdGreen, thresholdYellow);
-
-		for (final String issueIdent : relevantIssues) {
-			store.putString(issueIdent, ".");
-		}
-		store.apply();
+		ViewedIssuesHandler.storeRelevantUniqueIssueIdents(
+				adapter.getContext(), issues, thresholdGreen, thresholdYellow);
 
 		Log.i(IssuesListener.class.getSimpleName(), "Issues loaded");
 	}

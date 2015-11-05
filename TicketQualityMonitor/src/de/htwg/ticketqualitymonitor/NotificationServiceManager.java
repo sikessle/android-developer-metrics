@@ -11,7 +11,6 @@ import android.util.Log;
 
 public class NotificationServiceManager {
 
-	public static final String VIEWED_ISSUE_KEYS = "de.htwg.ticketqualitymonitor.viewed_issues";
 	private final long intervalMillis;
 	private final Class<? extends Service> serviceClass;
 

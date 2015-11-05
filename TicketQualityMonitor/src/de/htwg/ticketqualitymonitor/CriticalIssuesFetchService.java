@@ -1,7 +1,5 @@
 package de.htwg.ticketqualitymonitor;
 
-import java.util.Set;
-
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -47,27 +45,21 @@ public class CriticalIssuesFetchService extends IntentService {
 		Log.i(CriticalIssuesFetchService.class.getSimpleName(),
 				"onHandleIntent called.");
 
+		setupInstanceVariablesFromPrefs();
+		loadIssues();
+	}
+
+	private void setupInstanceVariablesFromPrefs() {
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
+
 		thresholdGreen = Double.parseDouble(prefs.getString(
 				getString(R.string.key_color_threshold_green), "2.0"));
 		thresholdYellow = Double.parseDouble(prefs.getString(
 				getString(R.string.key_color_threshold_yellow), "2.0"));
 
-		setUpApiAndProjectKey();
-		loadIssues();
-	}
-
-	private void setUpApiAndProjectKey() {
-		if (api == null) {
-			api = JiraApiFactory.createInstance(this);
-		}
-		if (projectKey == null) {
-			final SharedPreferences prefs = PreferenceManager
-					.getDefaultSharedPreferences(this);
-			projectKey = prefs.getString(getString(R.string.key_project),
-					"none");
-		}
+		api = JiraApiFactory.createInstance(this);
+		projectKey = prefs.getString(getString(R.string.key_project), "none");
 	}
 
 	private void loadIssues() {
@@ -98,14 +90,12 @@ public class CriticalIssuesFetchService extends IntentService {
 
 		@Override
 		public void onResponse(JiraIssue[] issues) {
-			final SharedPreferences store = getSharedPreferences(
-					NotificationServiceManager.VIEWED_ISSUE_KEYS, 0);
+			final boolean doNotify = ViewedIssuesHandler
+					.storeContainsAllRelevantIssues(
+							CriticalIssuesFetchService.this, issues,
+							thresholdGreen, thresholdYellow);
 
-			final Set<String> relevantIssues = ViewedIssuesHandler
-					.getRelevantUniqueIssueIdents(issues, thresholdGreen,
-							thresholdYellow);
-
-			if (!store.getAll().keySet().containsAll(relevantIssues)) {
+			if (doNotify) {
 				sendNotification();
 			} else {
 				Log.i(CriticalIssuesFetchService.class.getSimpleName(),
