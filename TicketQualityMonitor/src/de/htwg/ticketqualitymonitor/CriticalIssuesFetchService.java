@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -87,11 +88,12 @@ public class CriticalIssuesFetchService extends IntentService {
 
 		@Override
 		public void onResponse(JiraIssue[] issues) {
+			final Context context = CriticalIssuesFetchService.this;
 			final boolean allRelevantIssuesSeen = ViewedIssuesHandler
-					.allRelevantIssuesSeen(CriticalIssuesFetchService.this,
-							issues);
+					.allRelevantIssuesSeen(context, issues);
 
 			if (!allRelevantIssuesSeen) {
+				ViewedIssuesHandler.markRelevantIssuesAsSeen(context, issues);
 				sendNotification();
 			} else {
 				Log.i(CriticalIssuesFetchService.class.getSimpleName(),
