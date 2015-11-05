@@ -67,13 +67,8 @@ public class CriticalIssuesFetchService extends IntentService {
 	private void sendNotification(Set<Entry<String, Double>> newIssues) {
 		final PendingIntent startAppIntent = PendingIntent.getActivity(this, 0,
 				new Intent(this, MainActivity.class), 0);
-		final StringBuilder sb = new StringBuilder();
 
-		for (final Entry<String, Double> issue : newIssues) {
-			sb.append(issue.getKey()).append(" | ");
-		}
-		sb.replace(sb.length() - 3, sb.length(), "");
-		final String issuesList = sb.toString();
+		final String issuesList = getIssuesNotificationList(newIssues);
 
 		final Notification notifi = new NotificationCompat.Builder(this)
 				.setContentTitle(getString(R.string.notification_title))
@@ -91,6 +86,17 @@ public class CriticalIssuesFetchService extends IntentService {
 		manager.notify(0, notifi);
 		Log.i(CriticalIssuesFetchService.class.getSimpleName(),
 				"Notification sent.");
+	}
+
+	private String getIssuesNotificationList(
+			Set<Entry<String, Double>> newIssues) {
+		final StringBuilder sb = new StringBuilder();
+
+		for (final Entry<String, Double> issue : newIssues) {
+			sb.append(issue.getKey()).append(" | ");
+		}
+		sb.replace(sb.length() - 3, sb.length(), "");
+		return sb.toString();
 	}
 
 	/**
