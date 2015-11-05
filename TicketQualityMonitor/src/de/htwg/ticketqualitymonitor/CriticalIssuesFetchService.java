@@ -26,7 +26,6 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
 public class CriticalIssuesFetchService extends IntentService {
 
 	public static final String INTENT_KEY_PROJECT = "projectKey";
-	// Defines a custom Intent action
 
 	private JiraApi api;
 	private String projectKey;
@@ -103,7 +102,8 @@ public class CriticalIssuesFetchService extends IntentService {
 					NotificationServiceManager.VIEWED_ISSUE_KEYS, 0);
 
 			final Set<String> relevantIssues = ViewedIssuesHandler
-					.getRelevantUniqueIssueIdents(issues, thresholdGreen, thresholdYellow);
+					.getRelevantUniqueIssueIdents(issues, thresholdGreen,
+							thresholdYellow);
 
 			if (!store.getAll().keySet().containsAll(relevantIssues)) {
 				sendNotification();
