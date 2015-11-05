@@ -37,8 +37,8 @@ public class NotificationServiceManager {
 
 		final long firstStart = System.currentTimeMillis() + intervalMillis;
 
-		getAM(context).setInexactRepeating(AlarmManager.RTC, firstStart,
-				intervalMillis, pendingIntent);
+		getAM(context).setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+				firstStart, intervalMillis, pendingIntent);
 
 		Log.i(NotificationServiceManager.class.getSimpleName(),
 				"Notification service started.");
