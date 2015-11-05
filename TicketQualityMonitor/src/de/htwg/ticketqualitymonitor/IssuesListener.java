@@ -48,7 +48,8 @@ public class IssuesListener implements Listener<JiraIssue[]> {
 
 		for (final JiraIssue issue : issues) {
 			if (issue.getSpentTimeHoursPerUpdate() > thresholdCritical) {
-				store.putBoolean(issue.getKey(), true);
+				store.putFloat(issue.getKey(),
+						(float) issue.getSpentTimeHoursPerUpdate());
 			}
 		}
 		store.apply();

@@ -1,8 +1,7 @@
 package de.htwg.ticketqualitymonitor;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.HashMap;
+import java.util.Map;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -99,20 +98,27 @@ public class CriticalIssuesFetchService extends IntentService {
 		public void onResponse(JiraIssue[] issues) {
 			final SharedPreferences store = getSharedPreferences(
 					NotificationServiceManager.VIEWED_ISSUE_KEYS, 0);
-			final Set<String> criticalIssueKeys = new HashSet<>();
+			final Map<String, Float> criticalIssues = new HashMap<>();
 
 			for (final JiraIssue issue : issues) {
 				if (issue.getSpentTimeHoursPerUpdate() > thresholdCritical) {
-					criticalIssueKeys.add(issue.getKey());
+					criticalIssues.put(issue.getKey(),
+							(float) issue.getSpentTimeHoursPerUpdate());
 				}
 			}
 
-			if (!store.getAll().keySet().containsAll(criticalIssueKeys)) {
+			if (notAllIssuesInStore(store, criticalIssues)) {
 				sendNotification();
 			} else {
 				Log.i(CriticalIssuesFetchService.class.getSimpleName(),
 						"No new critical issues found.");
 			}
+		}
+
+		private boolean notAllIssuesInStore(final SharedPreferences store,
+				final Map<String, Float> criticalIssues) {
+			return !store.getAll().entrySet()
+					.containsAll(criticalIssues.entrySet());
 		}
 	}
 
