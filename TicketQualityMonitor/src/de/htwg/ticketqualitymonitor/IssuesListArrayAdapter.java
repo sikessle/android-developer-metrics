@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import de.htwg.ticketqualitymonitor.model.JiraIssue;
+import de.htwg.ticketqualitymonitor.model.JiraIssueCategory;
 
 /**
  * Adapter to display a list of Jira issues.
@@ -89,15 +90,20 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 	}
 
 	private void setColor(View rootView, JiraIssue issue) {
-		final double hoursPerUpdate = issue.getSpentTimeHoursPerUpdate();
 		final View itemRoot = rootView.findViewById(R.id.issueItem);
+		final JiraIssueCategory category = JiraIssueCategory.fromIssue(issue,
+				thresholdGreen, thresholdYellow);
 
-		if (hoursPerUpdate <= thresholdGreen) {
+		switch (category) {
+		case GREEN:
 			itemRoot.setBackgroundColor(colorGreen);
-		} else if (hoursPerUpdate <= thresholdYellow) {
+			break;
+		case YELLOW:
 			itemRoot.setBackgroundColor(colorYellow);
-		} else {
+			break;
+		case RED:
 			itemRoot.setBackgroundColor(colorRed);
+			break;
 		}
 	}
 

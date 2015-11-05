@@ -2,6 +2,7 @@ package de.htwg.ticketqualitymonitor;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -19,6 +20,7 @@ import com.android.volley.VolleyError;
 import de.htwg.ticketqualitymonitor.model.JiraApi;
 import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
 import de.htwg.ticketqualitymonitor.model.JiraIssue;
+import de.htwg.ticketqualitymonitor.model.JiraIssueCategory;
 
 /**
  * Retrieves critical issues.
@@ -33,7 +35,8 @@ public class CriticalIssuesFetchService extends IntentService {
 
 	private final Listener<JiraIssue[]> issuesListener;
 	private final ErrorListener errorListener;
-	private double thresholdCritical;
+	private double thresholdGreen;
+	private double thresholdYellow;
 
 	public CriticalIssuesFetchService() {
 		super("Jira Issues Fetch Service");
@@ -49,7 +52,9 @@ public class CriticalIssuesFetchService extends IntentService {
 
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		thresholdCritical = Double.parseDouble(prefs.getString(
+		thresholdGreen = Double.parseDouble(prefs.getString(
+				getString(R.string.key_color_threshold_green), "2.0"));
+		thresholdYellow = Double.parseDouble(prefs.getString(
 				getString(R.string.key_color_threshold_yellow), "2.0"));
 
 		setUpApiAndProjectKey();
@@ -98,10 +103,14 @@ public class CriticalIssuesFetchService extends IntentService {
 		public void onResponse(JiraIssue[] issues) {
 			final SharedPreferences store = getSharedPreferences(
 					NotificationServiceManager.VIEWED_ISSUE_KEYS, 0);
+			JiraIssueCategory category;
+
 			final Map<String, Float> criticalIssues = new HashMap<>();
 
 			for (final JiraIssue issue : issues) {
-				if (issue.getSpentTimeHoursPerUpdate() > thresholdCritical) {
+				category = JiraIssueCategory.fromIssue(issue, thresholdGreen,
+						thresholdYellow);
+				if (category == JiraIssueCategory.RED) {
 					criticalIssues.put(issue.getKey(),
 							(float) issue.getSpentTimeHoursPerUpdate());
 				}

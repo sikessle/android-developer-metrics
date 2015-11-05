@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import com.android.volley.Response.Listener;
 
 import de.htwg.ticketqualitymonitor.model.JiraIssue;
+import de.htwg.ticketqualitymonitor.model.JiraIssueCategory;
 
 /**
  * Handles the successful request of issues from the Jira API.
@@ -17,7 +18,8 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
 public class IssuesListener implements Listener<JiraIssue[]> {
 	private final ArrayAdapter<? super JiraIssue> adapter;
 	private final SwipeRefreshLayout swipeRefresh;
-	private final double thresholdCritical;
+	private final double thresholdGreen;
+	private final double thresholdYellow;
 
 	/**
 	 * @param adapter
@@ -30,7 +32,10 @@ public class IssuesListener implements Listener<JiraIssue[]> {
 
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(adapter.getContext());
-		thresholdCritical = Double.parseDouble(prefs.getString(adapter
+		thresholdGreen = Double.parseDouble(prefs.getString(adapter
+				.getContext().getString(R.string.key_color_threshold_green),
+				"2.0"));
+		thresholdYellow = Double.parseDouble(prefs.getString(adapter
 				.getContext().getString(R.string.key_color_threshold_yellow),
 				"2.0"));
 	}
@@ -41,13 +46,18 @@ public class IssuesListener implements Listener<JiraIssue[]> {
 		adapter.addAll(issues);
 		swipeRefresh.setRefreshing(false);
 
+		JiraIssueCategory category;
+
 		final Editor store = adapter
 				.getContext()
 				.getSharedPreferences(
 						NotificationServiceManager.VIEWED_ISSUE_KEYS, 0).edit();
 
 		for (final JiraIssue issue : issues) {
-			if (issue.getSpentTimeHoursPerUpdate() > thresholdCritical) {
+			category = JiraIssueCategory.fromIssue(issue, thresholdGreen,
+					thresholdYellow);
+
+			if (category == JiraIssueCategory.RED) {
 				store.putFloat(issue.getKey(),
 						(float) issue.getSpentTimeHoursPerUpdate());
 			}
