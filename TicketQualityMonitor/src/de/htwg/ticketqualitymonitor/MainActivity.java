@@ -1,8 +1,5 @@
 package de.htwg.ticketqualitymonitor;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
@@ -13,6 +10,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +29,6 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
  */
 public class MainActivity extends Activity implements OnRefreshListener {
 
-	private static final String NOTIFIED_ISSUES_KEY = "de.htwg.ticketqualitymonitor.NOTIFIED_ISSUES";
 	private ArrayAdapter<JiraIssue> adapter;
 	private SwipeRefreshLayout swipeRefresh;
 	private JiraApi api;
@@ -41,61 +38,34 @@ public class MainActivity extends Activity implements OnRefreshListener {
 	private Runnable loadIssuesRunnable;
 	private boolean enableNotifications;
 	private boolean autoRefreshCancelled;
-	private Set<String> notifiedCriticalIssueKeys;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		// Restore notified issues
-		if (savedInstanceState != null) {
-			restoreNotifiedIssues(savedInstanceState);
-		}
-
 		issuesList = ((ListView) findViewById(R.id.issuesList));
 		setupPullToRefresh();
-	}
-
-	private void restoreNotifiedIssues(Bundle savedInstanceState) {
-		final String[] notifiedIssues = savedInstanceState
-				.getStringArray(NOTIFIED_ISSUES_KEY);
-		if (notifiedIssues != null) {
-			notifiedCriticalIssueKeys = new HashSet<>(
-					Arrays.asList(notifiedIssues));
-		}
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-
-		outState.putStringArray(NOTIFIED_ISSUES_KEY,
-				notifiedCriticalIssueKeys.toArray(new String[] {}));
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 
-		notifiedCriticalIssueKeys = notificationManager.getCriticalIssueKeys();
+		Log.i(MainActivity.class.getSimpleName(), "Pausing.");
+
 		stopAutoRefresh();
-		// Start notification service if app is paused
-		if (enableNotifications) {
-			notificationManager.start(this);
-		}
 	}
 
 	@Override
 	protected void onResume() {
 		super.onRestart();
 
+		Log.i(MainActivity.class.getSimpleName(), "Resuming.");
 		api = JiraApiFactory.createInstance(this);
 		connectListAdapter();
 		setUpNotificationManager();
 		startAutoRefresh();
-		// Cancel notification service if app is active
-		notificationManager.stop(this);
 	}
 
 	private void startAutoRefresh() {
@@ -133,13 +103,20 @@ public class MainActivity extends Activity implements OnRefreshListener {
 				.getDefaultSharedPreferences(this);
 		final int delay = Integer.parseInt(prefs.getString(
 				getString(R.string.key_notifications_interval), "1"));
+
+		if (notificationManager != null) {
+			notificationManager.stop(this);
+		}
+
 		notificationManager = new NotificationServiceManager(delay,
 				CriticalIssuesFetchService.class);
-		if (notifiedCriticalIssueKeys != null) {
-			notificationManager.setCriticalIssueKeys(notifiedCriticalIssueKeys);
-		}
+
 		enableNotifications = prefs.getBoolean(
 				getString(R.string.key_enable_notifications), false);
+
+		if (enableNotifications) {
+			notificationManager.start(this);
+		}
 	}
 
 	private void connectListAdapter() {
