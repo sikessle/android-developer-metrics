@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -35,7 +36,7 @@ public class NotificationServiceManager {
 				0, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 		final long intervalMillis = getIntervalMillis(context);
 
-		final long firstStart = System.currentTimeMillis() + intervalMillis;
+		final long firstStart = SystemClock.elapsedRealtime() + intervalMillis;
 
 		getAM(context).setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
 				firstStart, intervalMillis, pendingIntent);
