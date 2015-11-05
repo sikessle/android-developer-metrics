@@ -11,6 +11,7 @@
         tools:ignore="OldTargetApi" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -28,6 +29,12 @@
         </activity>
         <activity android:name=".MainPreferenceActivity" >
         </activity>
+
+        <receiver android:name=".OnBootCompletedReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".CriticalIssuesFetchService"

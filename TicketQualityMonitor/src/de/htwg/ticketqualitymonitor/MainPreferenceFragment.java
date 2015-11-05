@@ -84,10 +84,8 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 		}
 
 		if (keyEnableNotifications.equals(key)) {
-			final boolean notificationsEnabled = sharedPreferences.getBoolean(
-					key, false);
-			NotificationServiceManager.setState(getActivity(),
-					CriticalIssuesFetchService.class, notificationsEnabled);
+			NotificationServiceManager
+					.startOrStopBasedOnPreference(getActivity());
 		}
 	}
 

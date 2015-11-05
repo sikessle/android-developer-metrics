@@ -14,23 +14,32 @@ import android.util.Log;
 
 public class NotificationServiceManager {
 
+	private static Class<? extends Service> serviceClass = CriticalIssuesFetchService.class;
+
 	/**
-	 * Toggles the service.
+	 * Starts or stops the service based on the users preference.
 	 */
-	public static void setState(Context context,
-			Class<? extends Service> serviceClass, boolean start) {
+	public static void startOrStopBasedOnPreference(Context context) {
+		final boolean start = notificationsEnabled(context);
+
 		if (start) {
-			start(context, serviceClass);
+			start(context);
 		} else {
-			stop(context, serviceClass);
+			stop(context);
 		}
+	}
+
+	private static boolean notificationsEnabled(Context context) {
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return prefs.getBoolean(
+				context.getString(R.string.key_enable_notifications), false);
 	}
 
 	/**
 	 * Starts the service.
 	 */
-	public static void start(Context context,
-			Class<? extends Service> serviceClass) {
+	public static void start(Context context) {
 		final Intent serviceIntent = new Intent(context, serviceClass);
 		final PendingIntent pendingIntent = PendingIntent.getService(context,
 				0, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -57,8 +66,7 @@ public class NotificationServiceManager {
 	/**
 	 * Stops the service.
 	 */
-	public static void stop(Context context,
-			Class<? extends Service> serviceClass) {
+	public static void stop(Context context) {
 		final Intent serviceIntent = new Intent(context, serviceClass);
 		final PendingIntent pendingIntent = PendingIntent.getService(context,
 				0, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
