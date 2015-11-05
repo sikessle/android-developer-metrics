@@ -76,7 +76,7 @@ public class CriticalIssuesFetchService extends IntentService {
 
 		manager.notify(0, notifi);
 		Log.i(CriticalIssuesFetchService.class.getSimpleName(),
-				"Notification sent");
+				"Notification sent.");
 	}
 
 	/**
@@ -87,11 +87,11 @@ public class CriticalIssuesFetchService extends IntentService {
 
 		@Override
 		public void onResponse(JiraIssue[] issues) {
-			final boolean doNotify = ViewedIssuesHandler
-					.allRelevantIssuesSeen(
-							CriticalIssuesFetchService.this, issues);
+			final boolean allRelevantIssuesSeen = ViewedIssuesHandler
+					.allRelevantIssuesSeen(CriticalIssuesFetchService.this,
+							issues);
 
-			if (doNotify) {
+			if (!allRelevantIssuesSeen) {
 				sendNotification();
 			} else {
 				Log.i(CriticalIssuesFetchService.class.getSimpleName(),

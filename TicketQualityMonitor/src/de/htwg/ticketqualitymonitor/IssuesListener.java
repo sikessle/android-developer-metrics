@@ -31,9 +31,10 @@ public class IssuesListener implements Listener<JiraIssue[]> {
 		adapter.addAll(issues);
 		swipeRefresh.setRefreshing(false);
 
-		ViewedIssuesHandler.markRelevantIssuesAsSeen(adapter.getContext(), issues);
+		ViewedIssuesHandler.markRelevantIssuesAsSeen(adapter.getContext(),
+				issues);
 
-		Log.i(IssuesListener.class.getSimpleName(), "Issues loaded");
+		Log.i(IssuesListener.class.getSimpleName(), "Issues loaded.");
 	}
 
 }

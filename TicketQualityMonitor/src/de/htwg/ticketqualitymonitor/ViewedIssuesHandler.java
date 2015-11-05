@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import de.htwg.ticketqualitymonitor.model.JiraIssue;
 import de.htwg.ticketqualitymonitor.model.JiraIssueCategory;
 
@@ -46,6 +47,7 @@ public class ViewedIssuesHandler {
 	 */
 	public static void clearSeenIssues(Context context) {
 		getStore(context).edit().clear().apply();
+		Log.i(ViewedIssuesHandler.class.getSimpleName(), "Seen issues cleared.");
 	}
 
 	/**
@@ -65,6 +67,8 @@ public class ViewedIssuesHandler {
 		}
 
 		editor.apply();
+		Log.i(ViewedIssuesHandler.class.getSimpleName(),
+				"Relevant issues marked as seen.");
 	}
 
 	/**
