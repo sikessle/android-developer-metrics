@@ -1,5 +1,8 @@
 package de.htwg.ticketqualitymonitor;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -14,6 +17,7 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
 public class IssuesListener implements Listener<JiraIssue[]> {
 	private final ArrayAdapter<? super JiraIssue> adapter;
 	private final SwipeRefreshLayout swipeRefresh;
+	private final double thresholdCritical;
 
 	/**
 	 * @param adapter
@@ -23,13 +27,31 @@ public class IssuesListener implements Listener<JiraIssue[]> {
 			SwipeRefreshLayout swipeRefresh) {
 		this.adapter = adapter;
 		this.swipeRefresh = swipeRefresh;
+
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(adapter.getContext());
+		thresholdCritical = Double.parseDouble(prefs.getString(adapter
+				.getContext().getString(R.string.key_color_threshold_yellow),
+				"2.0"));
 	}
 
 	@Override
-	public void onResponse(JiraIssue[] projects) {
+	public void onResponse(JiraIssue[] issues) {
 		adapter.clear();
-		adapter.addAll(projects);
+		adapter.addAll(issues);
 		swipeRefresh.setRefreshing(false);
+
+		final Editor store = adapter
+				.getContext()
+				.getSharedPreferences(
+						NotificationServiceManager.VIEWED_ISSUE_KEYS, 0).edit();
+
+		for (final JiraIssue issue : issues) {
+			if (issue.getSpentTimeHoursPerUpdate() > thresholdCritical) {
+				store.putBoolean(issue.getKey(), true);
+			}
+		}
+		store.apply();
 
 		Log.i(IssuesListener.class.getSimpleName(), "Issues loaded");
 	}

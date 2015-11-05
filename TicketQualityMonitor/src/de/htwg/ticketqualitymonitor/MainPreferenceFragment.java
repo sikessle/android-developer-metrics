@@ -60,6 +60,11 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		init();
+
+		getActivity()
+				.getSharedPreferences(
+						NotificationServiceManager.VIEWED_ISSUE_KEYS, 0).edit()
+				.clear().apply();
 	}
 
 	@Override

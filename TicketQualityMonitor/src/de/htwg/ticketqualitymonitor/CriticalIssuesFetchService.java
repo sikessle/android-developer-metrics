@@ -97,6 +97,8 @@ public class CriticalIssuesFetchService extends IntentService {
 
 		@Override
 		public void onResponse(JiraIssue[] issues) {
+			final SharedPreferences store = getSharedPreferences(
+					NotificationServiceManager.VIEWED_ISSUE_KEYS, 0);
 			final Set<String> criticalIssueKeys = new HashSet<>();
 
 			for (final JiraIssue issue : issues) {
@@ -105,8 +107,11 @@ public class CriticalIssuesFetchService extends IntentService {
 				}
 			}
 
-			if (!criticalIssueKeys.isEmpty()) {
+			if (!store.getAll().keySet().containsAll(criticalIssueKeys)) {
 				sendNotification();
+			} else {
+				Log.i(CriticalIssuesFetchService.class.getSimpleName(),
+						"No new critical issues found.");
 			}
 		}
 	}
