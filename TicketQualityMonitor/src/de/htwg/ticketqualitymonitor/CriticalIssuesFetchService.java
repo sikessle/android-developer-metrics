@@ -1,7 +1,6 @@
 package de.htwg.ticketqualitymonitor;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -20,7 +19,6 @@ import com.android.volley.VolleyError;
 import de.htwg.ticketqualitymonitor.model.JiraApi;
 import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
 import de.htwg.ticketqualitymonitor.model.JiraIssue;
-import de.htwg.ticketqualitymonitor.model.JiraIssueCategory;
 
 /**
  * Retrieves critical issues.
@@ -103,31 +101,16 @@ public class CriticalIssuesFetchService extends IntentService {
 		public void onResponse(JiraIssue[] issues) {
 			final SharedPreferences store = getSharedPreferences(
 					NotificationServiceManager.VIEWED_ISSUE_KEYS, 0);
-			JiraIssueCategory category;
 
-			final Map<String, Float> criticalIssues = new HashMap<>();
+			final Set<String> relevantIssues = ViewedIssuesHandler
+					.getRelevantUniqueIssueIdents(issues, thresholdGreen, thresholdYellow);
 
-			for (final JiraIssue issue : issues) {
-				category = JiraIssueCategory.fromIssue(issue, thresholdGreen,
-						thresholdYellow);
-				if (category == JiraIssueCategory.RED) {
-					criticalIssues.put(issue.getKey(),
-							(float) issue.getSpentTimeHoursPerUpdate());
-				}
-			}
-
-			if (notAllIssuesInStore(store, criticalIssues)) {
+			if (!store.getAll().keySet().containsAll(relevantIssues)) {
 				sendNotification();
 			} else {
 				Log.i(CriticalIssuesFetchService.class.getSimpleName(),
 						"No new critical issues found.");
 			}
-		}
-
-		private boolean notAllIssuesInStore(final SharedPreferences store,
-				final Map<String, Float> criticalIssues) {
-			return !store.getAll().entrySet()
-					.containsAll(criticalIssues.entrySet());
 		}
 	}
 

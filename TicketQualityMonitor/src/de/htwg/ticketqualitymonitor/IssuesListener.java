@@ -1,5 +1,7 @@
 package de.htwg.ticketqualitymonitor;
 
+import java.util.Set;
+
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
@@ -10,7 +12,6 @@ import android.widget.ArrayAdapter;
 import com.android.volley.Response.Listener;
 
 import de.htwg.ticketqualitymonitor.model.JiraIssue;
-import de.htwg.ticketqualitymonitor.model.JiraIssueCategory;
 
 /**
  * Handles the successful request of issues from the Jira API.
@@ -46,21 +47,16 @@ public class IssuesListener implements Listener<JiraIssue[]> {
 		adapter.addAll(issues);
 		swipeRefresh.setRefreshing(false);
 
-		JiraIssueCategory category;
-
 		final Editor store = adapter
 				.getContext()
 				.getSharedPreferences(
 						NotificationServiceManager.VIEWED_ISSUE_KEYS, 0).edit();
 
-		for (final JiraIssue issue : issues) {
-			category = JiraIssueCategory.fromIssue(issue, thresholdGreen,
-					thresholdYellow);
+		final Set<String> relevantIssues = ViewedIssuesHandler
+				.getRelevantUniqueIssueIdents(issues, thresholdGreen, thresholdYellow);
 
-			if (category == JiraIssueCategory.RED) {
-				store.putFloat(issue.getKey(),
-						(float) issue.getSpentTimeHoursPerUpdate());
-			}
+		for (final String issueIdent : relevantIssues) {
+			store.putString(issueIdent, ".");
 		}
 		store.apply();
 
