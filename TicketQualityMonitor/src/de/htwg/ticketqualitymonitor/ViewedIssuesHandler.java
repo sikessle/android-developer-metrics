@@ -36,19 +36,23 @@ public class ViewedIssuesHandler {
 		return criticalIssues;
 	}
 
-	/**
-	 * The store which is responsible for storing the viewed issues.
-	 */
-	public static SharedPreferences getStore(Context context) {
+	private static SharedPreferences getStore(Context context) {
 		return context.getSharedPreferences(
 				ViewedIssuesHandler.STORE_VIEWED_ISSUES_KEY, 0);
-
 	}
 
 	/**
-	 * Filters the given issues and stores all relevant ones in the store.
+	 * Clears all seen issues.
 	 */
-	public static void storeRelevantIssues(Context context, JiraIssue[] issues) {
+	public static void clearSeenIssues(Context context) {
+		getStore(context).edit().clear().apply();
+	}
+
+	/**
+	 * Marks the all relevant issues of the given issues as seen.
+	 */
+	public static void markRelevantIssuesAsSeen(Context context,
+			JiraIssue[] issues) {
 		final double thresholdGreen = getThresholdGreen(context);
 		final double thresholdYellow = getThresholdYellow(context);
 
@@ -67,7 +71,7 @@ public class ViewedIssuesHandler {
 	 * Checks if the store contains all of the relevant issues (from the given
 	 * issues).
 	 */
-	public static boolean storeContainsAllRelevantIssues(Context context,
+	public static boolean allRelevantIssuesSeen(Context context,
 			JiraIssue[] issues) {
 
 		final double thresholdGreen = getThresholdGreen(context);

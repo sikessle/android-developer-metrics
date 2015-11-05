@@ -88,7 +88,7 @@ public class CriticalIssuesFetchService extends IntentService {
 		@Override
 		public void onResponse(JiraIssue[] issues) {
 			final boolean doNotify = ViewedIssuesHandler
-					.storeContainsAllRelevantIssues(
+					.allRelevantIssuesSeen(
 							CriticalIssuesFetchService.this, issues);
 
 			if (doNotify) {

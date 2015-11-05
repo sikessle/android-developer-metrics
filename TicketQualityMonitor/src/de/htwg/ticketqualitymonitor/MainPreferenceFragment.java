@@ -78,7 +78,7 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 		}
 
 		if (keyThresholdGreen.equals(key) || keyThresholdYellow.equals(key)) {
-			ViewedIssuesHandler.getStore(getActivity()).edit().clear().apply();
+			ViewedIssuesHandler.clearSeenIssues(getActivity());
 		}
 
 		if (keyEnableNotifications.equals(key)) {
