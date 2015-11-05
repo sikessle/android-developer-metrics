@@ -18,7 +18,7 @@ public class JiraApiFactory {
 	 *            retrieved.
 	 * @return A new {@link JiraApi} object.
 	 */
-	public static JiraApi createInstance(Context context) {
+	public static JiraApi getInstance(Context context) {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 

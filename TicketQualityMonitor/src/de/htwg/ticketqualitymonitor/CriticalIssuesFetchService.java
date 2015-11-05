@@ -30,8 +30,6 @@ public class CriticalIssuesFetchService extends IntentService {
 
 	private final Listener<JiraIssue[]> issuesListener;
 	private final ErrorListener errorListener;
-	private double thresholdGreen;
-	private double thresholdYellow;
 
 	public CriticalIssuesFetchService() {
 		super("Jira Issues Fetch Service");
@@ -53,12 +51,7 @@ public class CriticalIssuesFetchService extends IntentService {
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 
-		thresholdGreen = Double.parseDouble(prefs.getString(
-				getString(R.string.key_color_threshold_green), "2.0"));
-		thresholdYellow = Double.parseDouble(prefs.getString(
-				getString(R.string.key_color_threshold_yellow), "2.0"));
-
-		api = JiraApiFactory.createInstance(this);
+		api = JiraApiFactory.getInstance(this);
 		projectKey = prefs.getString(getString(R.string.key_project), "none");
 	}
 
@@ -96,8 +89,7 @@ public class CriticalIssuesFetchService extends IntentService {
 		public void onResponse(JiraIssue[] issues) {
 			final boolean doNotify = ViewedIssuesHandler
 					.storeContainsAllRelevantIssues(
-							CriticalIssuesFetchService.this, issues,
-							thresholdGreen, thresholdYellow);
+							CriticalIssuesFetchService.this, issues);
 
 			if (doNotify) {
 				sendNotification();

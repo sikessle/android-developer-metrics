@@ -6,6 +6,7 @@ import java.util.Comparator;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.text.Html;
@@ -20,14 +21,15 @@ import de.htwg.ticketqualitymonitor.model.JiraIssueCategory;
 /**
  * Adapter to display a list of Jira issues.
  */
-public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
+public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> implements
+		OnSharedPreferenceChangeListener {
 
 	private final Comparator<JiraIssue> comparator = new HighestFirstComparator();
 	private final int colorGreen;
 	private final int colorYellow;
 	private final int colorRed;
-	private final double thresholdGreen;
-	private final double thresholdYellow;
+	private double thresholdGreen;
+	private double thresholdYellow;
 
 	public IssuesListArrayAdapter(Context context, JiraIssue[] issues) {
 		// Convert the issues array to an array list because ArrayAdapter will
@@ -42,10 +44,28 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		thresholdGreen = Double.parseDouble(prefs.getString(
-				context.getString(R.string.key_color_threshold_green), "2.0"));
-		thresholdYellow = Double.parseDouble(prefs.getString(
-				context.getString(R.string.key_color_threshold_yellow), "4.0"));
+		prefs.registerOnSharedPreferenceChangeListener(this);
+		setupThresholds();
+	}
+
+	private void setupThresholds() {
+		thresholdGreen = ViewedIssuesHandler.getThresholdGreen(getContext());
+		thresholdYellow = ViewedIssuesHandler.getThresholdYellow(getContext());
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+
+		final String keyGreen = getContext().getString(
+				R.string.key_color_threshold_green);
+		final String keyYellow = getContext().getString(
+				R.string.key_color_threshold_green);
+
+		if (keyGreen.equals(key) || keyYellow.equals(key)) {
+			setupThresholds();
+			notifyDataSetChanged();
+		}
 	}
 
 	@Override
@@ -131,4 +151,5 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> {
 		}
 
 	}
+
 }

@@ -29,121 +29,37 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
  */
 public class MainActivity extends Activity implements OnRefreshListener {
 
-	private ArrayAdapter<JiraIssue> adapter;
+	private ArrayAdapter<JiraIssue> listAdapter;
 	private SwipeRefreshLayout swipeRefresh;
-	private JiraApi api;
-	private NotificationServiceManager notificationManager;
 	private ListView issuesList;
 	private Handler refreshHandler;
-	private Runnable loadIssuesRunnable;
-	private boolean enableNotifications;
-	private boolean autoRefreshCancelled;
+	private Runnable issuesLoader;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+		swipeRefresh.setOnRefreshListener(this);
+		listAdapter = new IssuesListArrayAdapter(this, new JiraIssue[] {});
 		issuesList = ((ListView) findViewById(R.id.issuesList));
-		setupPullToRefresh();
+		issuesList.setOnScrollListener(new DisableRefreshOnNormalScrolling());
+		issuesList.setAdapter(listAdapter);
 	}
 
 	@Override
 	protected void onPause() {
-		super.onPause();
-
 		Log.i(MainActivity.class.getSimpleName(), "Pausing.");
-
+		super.onPause();
 		stopAutoRefresh();
 	}
 
 	@Override
 	protected void onResume() {
-		super.onRestart();
-
 		Log.i(MainActivity.class.getSimpleName(), "Resuming.");
-		api = JiraApiFactory.createInstance(this);
-		connectListAdapter();
-		setUpNotificationManager();
+		super.onRestart();
 		startAutoRefresh();
-	}
-
-	private void startAutoRefresh() {
-		autoRefreshCancelled = false;
-		final SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		final int interval = Integer.parseInt(prefs.getString(
-				getString(R.string.key_issues_refresh_rate), "1"));
-		refreshHandler = new Handler();
-		loadIssuesRunnable = new Runnable() {
-			@Override
-			public void run() {
-				loadIssues();
-				if (!autoRefreshCancelled) {
-					refreshHandler.postDelayed(loadIssuesRunnable,
-							TimeUnit.MINUTES.toMillis(interval));
-				}
-			}
-		};
-		refreshHandler.post(loadIssuesRunnable);
-	}
-
-	private void stopAutoRefresh() {
-		autoRefreshCancelled = true;
-	}
-
-	private void setupPullToRefresh() {
-		swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-		swipeRefresh.setOnRefreshListener(this);
-		issuesList.setOnScrollListener(new DisableRefreshOnNormalScrolling());
-	}
-
-	private void setUpNotificationManager() {
-		final SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		final int delay = Integer.parseInt(prefs.getString(
-				getString(R.string.key_notifications_interval), "1"));
-
-		if (notificationManager != null) {
-			notificationManager.stop(this);
-		}
-
-		notificationManager = new NotificationServiceManager(delay,
-				CriticalIssuesFetchService.class);
-
-		enableNotifications = prefs.getBoolean(
-				getString(R.string.key_enable_notifications), false);
-
-		if (enableNotifications) {
-			notificationManager.start(this);
-		}
-	}
-
-	private void connectListAdapter() {
-		adapter = new IssuesListArrayAdapter(this, new JiraIssue[] {});
-		issuesList.setAdapter(adapter);
-	}
-
-	private void loadIssues() {
-		final SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-
-		final String projectKey = prefs.getString(
-				getString(R.string.key_project), "none");
-		final TextView errorView = (TextView) findViewById(R.id.issuesError);
-		if (!swipeRefresh.isRefreshing()) {
-			swipeRefresh.post(new Runnable() {
-				@Override
-				public void run() {
-					swipeRefresh.setRefreshing(true);
-				}
-			});
-		}
-
-		errorView.setVisibility(View.GONE);
-		api.getAssignedInProgressIssuess(projectKey, new IssuesListener(
-				adapter, swipeRefresh), new IssuesErrorListener(swipeRefresh,
-				errorView));
 	}
 
 	@Override
@@ -151,18 +67,66 @@ public class MainActivity extends Activity implements OnRefreshListener {
 		loadIssues();
 	}
 
+	private void startAutoRefresh() {
+		final int interval = getAutoRefreshInterval();
+		refreshHandler = new Handler();
+		issuesLoader = new Runnable() {
+			@Override
+			public void run() {
+				loadIssues();
+				refreshHandler.postDelayed(issuesLoader,
+						TimeUnit.MINUTES.toMillis(interval));
+			}
+		};
+		refreshHandler.post(issuesLoader);
+	}
+
+	private void stopAutoRefresh() {
+		refreshHandler.removeCallbacks(issuesLoader);
+	}
+
+	private int getAutoRefreshInterval() {
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		return Integer.parseInt(prefs.getString(
+				getString(R.string.key_issues_refresh_rate), "1"));
+	}
+
+	private void loadIssues() {
+		final JiraApi api = JiraApiFactory.getInstance(this);
+		final TextView errorView = (TextView) findViewById(R.id.issuesError);
+		final IssuesListener listener = new IssuesListener(listAdapter,
+				swipeRefresh);
+		final IssuesErrorListener errorListener = new IssuesErrorListener(
+				swipeRefresh, errorView);
+
+		swipeRefresh.post(new Runnable() {
+			@Override
+			public void run() {
+				swipeRefresh.setRefreshing(true);
+			}
+		});
+
+		errorView.setVisibility(View.GONE);
+		api.getAssignedInProgressIssuess(getProjectKey(), listener,
+				errorListener);
+	}
+
+	private String getProjectKey() {
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		return prefs.getString(getString(R.string.key_project), "none");
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
+		// Handle action bar item clicks here.
 		final int id = item.getItemId();
 		if (id == R.id.settingsAction) {
 			final Intent settingsIntent = new Intent(this,
@@ -173,6 +137,10 @@ public class MainActivity extends Activity implements OnRefreshListener {
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * Disables refreshing if the user scrolls up normally (and not pulling down
+	 * to refresh).
+	 */
 	private class DisableRefreshOnNormalScrolling implements OnScrollListener {
 
 		@Override

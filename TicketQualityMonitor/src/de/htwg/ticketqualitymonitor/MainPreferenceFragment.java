@@ -18,8 +18,6 @@ import de.htwg.ticketqualitymonitor.model.JiraApiFactory;
 public class MainPreferenceFragment extends PreferenceFragment implements
 		OnPreferenceClickListener, OnSharedPreferenceChangeListener {
 
-	private JiraApi api;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -29,54 +27,15 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 
 		// Load the preferences from an XML resource
 		addPreferencesFromResource(R.xml.preferences);
-
-		init();
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.registerOnSharedPreferenceChangeListener(this);
-
-		init();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.unregisterOnSharedPreferenceChangeListener(this);
-	}
-
-	private void init() {
-		api = JiraApiFactory.createInstance(getActivity());
 		initProjectList();
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-			String key) {
-		init();
-
-		ViewedIssuesHandler.getStore(getActivity()).edit().clear().apply();
-	}
-
-	@Override
-	public boolean onPreferenceClick(Preference preference) {
-		// Kill the dialog and reload the projects (retry of failed load)
-		((ListPreference) preference).getDialog().dismiss();
-		initProjectList();
-		return false;
 	}
 
 	private void initProjectList() {
 		final String keyProjectList = getString(R.string.key_project);
 		final String errorMessage = getString(R.string.preference_error_projects);
 		final ListPreference prefList = (ListPreference) findPreference(keyProjectList);
-		// Shows loading indicator
+		final JiraApi api = JiraApiFactory.getInstance(getActivity());
+		// Shows loading indicator text
 		prefList.setSummary(getString(R.string.loading));
 		// Will be set by the error listener if an error occurs, so it can be
 		// handled in this class by allowing the user to reload the list by
@@ -85,6 +44,57 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 
 		api.getProjects(new ProjectsListener(prefList),
 				new ProjectsErrorListener(this, prefList, errorMessage));
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		getPrefs().registerOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		getPrefs().unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	private SharedPreferences getPrefs() {
+		return PreferenceManager.getDefaultSharedPreferences(getActivity());
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+
+		final String keyUri = getString(R.string.key_jira_host);
+		final String keyUser = getString(R.string.key_jira_username);
+		final String keyPass = getString(R.string.key_jira_password);
+		final String keyThresholdGreen = getString(R.string.key_color_threshold_green);
+		final String keyThresholdYellow = getString(R.string.key_color_threshold_yellow);
+		final String keyEnableNotifications = getString(R.string.key_enable_notifications);
+
+		if (keyUri.equals(key) || keyUser.equals(key) || keyPass.equals(key)) {
+			initProjectList();
+		}
+
+		if (keyThresholdGreen.equals(key) || keyThresholdYellow.equals(key)) {
+			ViewedIssuesHandler.getStore(getActivity()).edit().clear().apply();
+		}
+
+		if (keyEnableNotifications.equals(key)) {
+			final boolean notificationsEnabled = sharedPreferences.getBoolean(
+					key, false);
+			NotificationServiceManager.setState(getActivity(),
+					CriticalIssuesFetchService.class, notificationsEnabled);
+		}
+	}
+
+	@Override
+	public boolean onPreferenceClick(Preference preference) {
+		// Kill the dialog and reload the projects (retry of failed load)
+		((ListPreference) preference).getDialog().dismiss();
+		initProjectList();
+		return false;
 	}
 
 }
