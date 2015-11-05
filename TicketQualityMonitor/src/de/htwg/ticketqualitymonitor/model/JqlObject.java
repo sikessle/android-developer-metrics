@@ -4,6 +4,9 @@ import java.util.Arrays;
 
 import net.jcip.annotations.Immutable;
 
+/**
+ * Wrapper type to handle JQL results.
+ */
 @Immutable
 public class JqlObject {
 	private JiraIssue[] issues;

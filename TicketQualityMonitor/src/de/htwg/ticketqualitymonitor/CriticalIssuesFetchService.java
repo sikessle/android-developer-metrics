@@ -86,6 +86,10 @@ public class CriticalIssuesFetchService extends IntentService {
 				"Notification sent");
 	}
 
+	/**
+	 * Checks if any new relevant issues are available. If yes, then send a
+	 * notification.
+	 */
 	private class NotificationIssuesListener implements Listener<JiraIssue[]> {
 
 		@Override
@@ -104,6 +108,9 @@ public class CriticalIssuesFetchService extends IntentService {
 		}
 	}
 
+	/**
+	 * Handles error, does mainly logging.
+	 */
 	private class NotificationIssuesErrorListener implements ErrorListener {
 
 		@Override
