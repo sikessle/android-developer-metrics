@@ -22,18 +22,18 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.registerOnSharedPreferenceChangeListener(this);
-
 		// Load the preferences from an XML resource
 		addPreferencesFromResource(R.xml.preferences);
 		initProjectList();
+
+		PreferenceManager.getDefaultSharedPreferences(getActivity())
+				.registerOnSharedPreferenceChangeListener(this);
 	}
 
 	private void initProjectList() {
 		final String keyProjectList = getString(R.string.key_project);
-		final String errorMessage = getString(R.string.preference_error_projects);
 		final ListPreference prefList = (ListPreference) findPreference(keyProjectList);
+		final String errorMessage = getString(R.string.preference_error_projects);
 		final JiraApi api = JiraApiFactory.getInstance(getActivity());
 		// Shows loading indicator text
 		prefList.setSummary(getString(R.string.loading));
