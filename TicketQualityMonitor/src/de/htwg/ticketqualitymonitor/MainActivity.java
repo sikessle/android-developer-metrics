@@ -103,7 +103,7 @@ public class MainActivity extends Activity implements OnRefreshListener {
 		showLoadingIndicator();
 
 		errorView.setVisibility(View.GONE);
-		api.getAssignedInProgressIssuess(getProjectKey(), listener,
+		api.getAssignedIssuess(getProjectKey(), listener,
 				errorListener);
 	}
 

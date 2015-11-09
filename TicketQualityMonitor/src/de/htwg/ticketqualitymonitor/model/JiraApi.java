@@ -173,7 +173,7 @@ public class JiraApi {
 	 * @param errorListener
 	 *            A listener which will be called if an error occurs.
 	 */
-	public void getAssignedInProgressIssuess(String projectKey,
+	public void getAssignedIssuess(String projectKey,
 			Listener<JiraIssue[]> listener, ErrorListener errorListener) {
 		// Wrap the listener into a custom jql listener to hide the jql response
 		// object.

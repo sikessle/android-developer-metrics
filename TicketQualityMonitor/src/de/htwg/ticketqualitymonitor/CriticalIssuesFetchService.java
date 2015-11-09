@@ -60,7 +60,7 @@ public class CriticalIssuesFetchService extends IntentService {
 	}
 
 	private void loadIssues() {
-		api.getAssignedInProgressIssuess(projectKey, issuesListener,
+		api.getAssignedIssuess(projectKey, issuesListener,
 				errorListener);
 	}
 
