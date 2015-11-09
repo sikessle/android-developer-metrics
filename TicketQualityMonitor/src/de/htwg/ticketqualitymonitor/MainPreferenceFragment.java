@@ -72,6 +72,7 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 		final String keyThresholdGreen = getString(R.string.key_color_threshold_green);
 		final String keyThresholdYellow = getString(R.string.key_color_threshold_yellow);
 		final String keyEnableNotifications = getString(R.string.key_enable_notifications);
+		final String keyNotificationsInterval = getString(R.string.key_notifications_interval);
 
 		if (keyUri.equals(key) || keyUser.equals(key) || keyPass.equals(key)) {
 			initProjectList();
@@ -85,6 +86,12 @@ public class MainPreferenceFragment extends PreferenceFragment implements
 		if (keyEnableNotifications.equals(key)) {
 			NotificationServiceManager
 					.startOrStopBasedOnPreference(getActivity());
+		}
+
+		if (keyNotificationsInterval.equals(key)) {
+			// Restart service
+			NotificationServiceManager.stop(getActivity());
+			NotificationServiceManager.start(getActivity());
 		}
 
 		if (keyProject.equals(key)) {
