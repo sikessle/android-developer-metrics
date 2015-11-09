@@ -131,6 +131,7 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> implements
 	public void notifyDataSetChanged() {
 		setNotifyOnChange(false);
 		sort(comparator);
+		setNotifyOnChange(true);
 		super.notifyDataSetChanged();
 	}
 
