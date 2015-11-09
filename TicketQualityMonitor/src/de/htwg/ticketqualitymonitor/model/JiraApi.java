@@ -29,7 +29,7 @@ public class JiraApi {
 	/** Assigned and in progress issues. Replace # with a project key. */
 	private static final String ISSUES_TEMPLATE = "search?jql=project="
 			+ REPLACE_CHAR
-			+ "%20AND%20status=\"In%20Progress\"&fields=assignee,worklog,timetracking&maxResults=100";
+			+ "%20AND%20%28status=%22In%20Progress%22%20OR%20status=%22Done%22%20OR%20status=%22Closed%22%29&fields=assignee,worklog,timetracking&maxResults=100";
 	/** Timeout after which the request fails */
 	private static final int TIMEOUT_MS = 4000;
 	/** Number of retries before the request fails */
