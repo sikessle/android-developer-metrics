@@ -24,12 +24,12 @@ import de.htwg.ticketqualitymonitor.model.JiraIssueCategory;
 public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> implements
 		OnSharedPreferenceChangeListener {
 
-	private final Comparator<JiraIssue> comparator = new HighestFirstComparator();
 	private final int colorGreen;
 	private final int colorYellow;
 	private final int colorRed;
 	private double thresholdGreen;
 	private double thresholdYellow;
+	private final Comparator<JiraIssue> issueComparator;
 
 	public IssuesListArrayAdapter(Context context, JiraIssue[] issues) {
 		// Convert the issues array to an array list because ArrayAdapter will
@@ -41,6 +41,7 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> implements
 		colorGreen = resources.getColor(R.color.issue_green);
 		colorYellow = resources.getColor(R.color.issue_yellow);
 		colorRed = resources.getColor(R.color.issue_red);
+		issueComparator = new LeastHoursPerUpdateComparator();
 
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
@@ -100,8 +101,7 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> implements
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(ctx.getString(R.string.hours_per_update));
-		sb.append(String.format("<b>%.2f</b>",
-				issue.getSpentTimeHoursPerUpdate()));
+		sb.append(String.format("<b>%.2f</b>", issue.getSpentHoursPerUpdate()));
 		sb.append("\n");
 		sb.append("<b>" + ctx.getString(R.string.assignee) + "</b>");
 		sb.append(issue.getAssignee());
@@ -130,22 +130,23 @@ public class IssuesListArrayAdapter extends ArrayAdapter<JiraIssue> implements
 	@Override
 	public void notifyDataSetChanged() {
 		setNotifyOnChange(false);
-		sort(comparator);
+		sort(issueComparator);
 		setNotifyOnChange(true);
 		super.notifyDataSetChanged();
 	}
 
-	private class HighestFirstComparator implements Comparator<JiraIssue> {
+	private static class LeastHoursPerUpdateComparator implements
+			Comparator<JiraIssue> {
 
 		@Override
 		public int compare(JiraIssue lhs, JiraIssue rhs) {
-			final double lhsRate = lhs.getSpentTimeHoursPerUpdate();
-			final double rhsRate = rhs.getSpentTimeHoursPerUpdate();
+			final double lhsRate = lhs.getSpentHoursPerUpdate();
+			final double rhsRate = rhs.getSpentHoursPerUpdate();
 
 			if (lhsRate > rhsRate) {
 				return -1;
 			}
-			if (rhsRate < lhsRate) {
+			if (lhsRate < rhsRate) {
 				return 1;
 			}
 			return 0;

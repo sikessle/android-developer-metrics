@@ -28,7 +28,7 @@ public class JiraIssue {
 		return fields.assignee.name;
 	}
 
-	public double getSpentTimeHoursPerUpdate() {
+	public double getSpentHoursPerUpdate() {
 		if (fields.worklog.total == 0) {
 			return 0.;
 		}

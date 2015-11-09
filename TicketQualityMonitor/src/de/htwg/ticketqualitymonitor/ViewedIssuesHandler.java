@@ -34,7 +34,7 @@ public class ViewedIssuesHandler {
 					thresholdYellow);
 			if (category == JiraIssueCategory.RED) {
 				criticalIssues.put(issue.getKey(),
-						issue.getSpentTimeHoursPerUpdate());
+						issue.getSpentHoursPerUpdate());
 			}
 		}
 

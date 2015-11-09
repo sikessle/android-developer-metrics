@@ -12,14 +12,14 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue;
  * Handles the successful request of issues from the Jira API.
  */
 public class IssuesListener implements Listener<JiraIssue[]> {
-	private final ArrayAdapter<? super JiraIssue> adapter;
+	private final ArrayAdapter<JiraIssue> adapter;
 	private final SwipeRefreshLayout swipeRefresh;
 
 	/**
 	 * @param adapter
 	 *            An adapter to fill with the projects.
 	 */
-	public IssuesListener(ArrayAdapter<? super JiraIssue> adapter,
+	public IssuesListener(ArrayAdapter<JiraIssue> adapter,
 			SwipeRefreshLayout swipeRefresh) {
 		this.adapter = adapter;
 		this.swipeRefresh = swipeRefresh;

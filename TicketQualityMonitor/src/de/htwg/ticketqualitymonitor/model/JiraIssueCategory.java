@@ -5,7 +5,7 @@ public enum JiraIssueCategory {
 
 	public static JiraIssueCategory fromIssue(JiraIssue issue,
 			double thresholdGreen, double thresholdYellow) {
-		final double hoursPerUpdate = issue.getSpentTimeHoursPerUpdate();
+		final double hoursPerUpdate = issue.getSpentHoursPerUpdate();
 
 		if (hoursPerUpdate <= thresholdGreen) {
 			return GREEN;
