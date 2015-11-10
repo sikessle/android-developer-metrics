@@ -14,6 +14,9 @@ import android.util.Log;
 
 public class NotificationServiceManager {
 
+	private NotificationServiceManager() {
+	}
+
 	private static Class<? extends Service> serviceClass = CriticalIssuesFetchService.class;
 
 	/**

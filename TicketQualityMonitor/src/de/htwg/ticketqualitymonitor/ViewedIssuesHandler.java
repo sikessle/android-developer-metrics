@@ -22,6 +22,9 @@ public class ViewedIssuesHandler {
 
 	private static final String STORE_VIEWED_ISSUES_KEY = "de.htwg.ticketqualitymonitor.viewed_issues";
 
+	private ViewedIssuesHandler() {
+	}
+
 	public static Set<Entry<String, Double>> getRelevantIssues(Context context,
 			JiraIssue[] issues) {
 		final double thresholdGreen = getThresholdGreen(context);
