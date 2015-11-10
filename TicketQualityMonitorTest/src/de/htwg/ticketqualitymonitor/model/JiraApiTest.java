@@ -21,8 +21,8 @@ public class JiraApiTest extends AndroidTestCase {
 	}
 
 	public void testValidConstructorArgs() {
-		String uri = "http://localhost/";
-		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
+		final String uri = "http://localhost/";
+		final JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
 
 		assertEquals(uri + URI_SUFFIX, api.getUri());
 		assertEquals(USER, api.getUser());
@@ -30,15 +30,15 @@ public class JiraApiTest extends AndroidTestCase {
 	}
 
 	public void testMissingTrailingSlash() {
-		String uri = "http://localhost";
-		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
+		final String uri = "http://localhost";
+		final JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
 
 		assertEquals(uri + "/" + URI_SUFFIX, api.getUri());
 	}
 
 	public void testMissingLeadingHttp() {
-		String uri = "localhost/";
-		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
+		final String uri = "localhost/";
+		final JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
 
 		assertEquals("http://" + uri + URI_SUFFIX, api.getUri());
 	}
@@ -48,18 +48,18 @@ public class JiraApiTest extends AndroidTestCase {
 	}
 
 	public void testGetRequestWithCredentials() throws Exception {
-		String uri = "http://localhost/";
-		String resource = "res";
-		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
-		GsonRequest<String> request = api.createBaseRequest(resource,
+		final String uri = "http://localhost/";
+		final String resource = "res";
+		final JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
+		final GsonRequest<String> request = api.createBaseRequest(resource,
 				String.class, new Listener<String>() {
-			@Override
-			public void onResponse(String res) {
-			}
-		}, createFailFastErrorListener());
+					@Override
+					public void onResponse(String res) {
+					}
+				}, createFailFastErrorListener());
 
-		String userPass = (USER + ":" + PASS);
-		String expectedCredentials = "Basic "
+		final String userPass = (USER + ":" + PASS);
+		final String expectedCredentials = "Basic "
 				+ Base64.encodeToString(userPass.getBytes("UTF-8"),
 						Base64.NO_WRAP);
 
@@ -69,17 +69,17 @@ public class JiraApiTest extends AndroidTestCase {
 	}
 
 	public void testGetRequestListener() {
-		String uri = "http://localhost/";
+		final String uri = "http://localhost/";
 		final String expectedResponse = "resp";
-		JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
-		GsonRequest<String> request = api.createBaseRequest("/res",
+		final JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
+		final GsonRequest<String> request = api.createBaseRequest("/res",
 				String.class, new Listener<String>() {
-			@Override
-			public void onResponse(String res) {
-				assertEquals(expectedResponse, res);
-				setListenerCalled(true);
-			}
-		}, createFailFastErrorListener());
+					@Override
+					public void onResponse(String res) {
+						assertEquals(expectedResponse, res);
+						setListenerCalled(true);
+					}
+				}, createFailFastErrorListener());
 
 		setListenerCalled(false);
 		request.deliverResponse(expectedResponse);
@@ -90,7 +90,7 @@ public class JiraApiTest extends AndroidTestCase {
 		return new ErrorListener() {
 
 			@Override
-			public void onErrorResponse(VolleyError arg0) {
+			public void onErrorResponse(VolleyError error) {
 				fail("an error ocurred");
 			}
 		};

@@ -2,12 +2,9 @@ package de.htwg.ticketqualitymonitor.model;
 
 import java.util.Arrays;
 
-import net.jcip.annotations.Immutable;
-
 /**
  * Wrapper type to handle JQL results.
  */
-@Immutable
 public class JqlObject {
 	private JiraIssue[] issues;
 
@@ -16,5 +13,9 @@ public class JqlObject {
 
 	public JiraIssue[] getIssues() {
 		return Arrays.copyOf(issues, issues.length);
+	}
+
+	public void setIssues(JiraIssue[] issues) {
+		this.issues = Arrays.copyOf(issues, issues.length);
 	}
 }

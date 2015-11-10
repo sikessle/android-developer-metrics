@@ -2,13 +2,10 @@ package de.htwg.ticketqualitymonitor.model;
 
 import java.util.concurrent.TimeUnit;
 
-import net.jcip.annotations.Immutable;
-
 /**
  * Represents a Jira issues resource with some, not all, properties. This class
  * will be instantiated by GSON and filled via reflection.
  */
-@Immutable
 public class JiraIssue {
 
 	private String key;
@@ -22,6 +19,14 @@ public class JiraIssue {
 
 	public String getKey() {
 		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public void setFields(Fields fields) {
+		this.fields = fields;
 	}
 
 	public String getAssignee() {
@@ -43,6 +48,19 @@ public class JiraIssue {
 
 		public Fields() {
 		}
+
+		public void setAssignee(Assignee assignee) {
+			this.assignee = assignee;
+		}
+
+		public void setWorklog(Worklog worklog) {
+			this.worklog = worklog;
+		}
+
+		public void setTimetracking(Timetracking timetracking) {
+			this.timetracking = timetracking;
+		}
+
 	}
 
 	public static class Assignee {
@@ -50,6 +68,11 @@ public class JiraIssue {
 
 		public Assignee() {
 		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
 	}
 
 	public static class Worklog {
@@ -57,6 +80,11 @@ public class JiraIssue {
 
 		public Worklog() {
 		}
+
+		public void setTotal(int total) {
+			this.total = total;
+		}
+
 	}
 
 	public static class Timetracking {
@@ -64,6 +92,11 @@ public class JiraIssue {
 
 		public Timetracking() {
 		}
+
+		public void setTimeSpentSeconds(long timeSpentSeconds) {
+			this.timeSpentSeconds = timeSpentSeconds;
+		}
+
 	}
 
 }
