@@ -30,6 +30,7 @@ public class JiraApi {
 	private static final String ISSUES_TEMPLATE = "search?jql=project="
 			+ REPLACE_CHAR
 			+ "%20AND%20%28status=%22In%20Progress%22%20OR%20status=%22Done%22%20OR%20status=%22Closed%22%20OR%20status=%22Resolved%22%29"
+			+ "%20AND%20assignee%20is%20not%20EMPTY"
 			+ "&fields=assignee,worklog,timetracking&maxResults=100";
 	/** Timeout after which the request fails */
 	private static final int TIMEOUT_MS = 4000;
@@ -135,7 +136,7 @@ public class JiraApi {
 		synchronized (credentials) {
 			headers = new HashMap<>(credentials);
 		}
-		final GsonRequest<T> request = new GsonRequest<T>(uri + resource,
+		final GsonRequest<T> request = new GsonRequest<>(uri + resource,
 				clazz, headers, listener, errorListener);
 		request.setRetryPolicy(retryPolicy);
 
