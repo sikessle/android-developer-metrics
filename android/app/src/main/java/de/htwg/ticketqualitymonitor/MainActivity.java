@@ -58,7 +58,7 @@ public class MainActivity extends Activity implements OnRefreshListener {
 	@Override
 	protected void onResume() {
 		Log.i(MainActivity.class.getSimpleName(), "Resuming.");
-		super.onRestart();
+		super.onResume();
 		startAutoRefresh();
 	}
 

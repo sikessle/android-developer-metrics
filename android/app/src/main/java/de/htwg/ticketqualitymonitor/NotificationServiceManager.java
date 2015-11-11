@@ -17,7 +17,7 @@ public class NotificationServiceManager {
 	private NotificationServiceManager() {
 	}
 
-	private static Class<? extends Service> serviceClass = CriticalIssuesFetchService.class;
+	private static final Class<? extends Service> serviceClass = CriticalIssuesFetchService.class;
 
 	/**
 	 * Starts or stops the service based on the users preference.
