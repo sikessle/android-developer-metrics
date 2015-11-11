@@ -1,14 +1,18 @@
 package de.htwg.ticketqualitymonitor.model;
 
-import java.lang.reflect.Field;
-
 import de.htwg.ticketqualitymonitor.model.JiraIssue.Fields;
 import de.htwg.ticketqualitymonitor.model.JiraIssue.Timetracking;
 import de.htwg.ticketqualitymonitor.model.JiraIssue.Worklog;
-import android.test.AndroidTestCase;
+import org.junit.Test;
 
-public class JiraIssueTest extends AndroidTestCase {
+import java.lang.reflect.Field;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+public class JiraIssueTest {
+
+    @Test
 	public void testGetSpentHoursPerUpdate() throws NoSuchFieldException,
 			IllegalAccessException, IllegalArgumentException {
 
@@ -21,8 +25,7 @@ public class JiraIssueTest extends AndroidTestCase {
 		final JiraIssue issue = prepareIssue(timeSpentSeconds,
 				totalWorklogItems);
 
-		assertEquals(expectedSpentHoursPerUpdate,
-				issue.getSpentHoursPerUpdate());
+        assertThat(expectedSpentHoursPerUpdate, is(issue.getSpentHoursPerUpdate()));
 	}
 
 	private JiraIssue prepareIssue(long timeSpentSeconds, int totalWorklogItems)

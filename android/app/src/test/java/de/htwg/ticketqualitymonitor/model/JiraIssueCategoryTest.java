@@ -4,22 +4,28 @@ import de.htwg.ticketqualitymonitor.model.JiraIssue.Fields;
 import de.htwg.ticketqualitymonitor.model.JiraIssue.Timetracking;
 import de.htwg.ticketqualitymonitor.model.JiraIssue.Worklog;
 import android.test.AndroidTestCase;
+import org.junit.Test;
 
-public class JiraIssueCategoryTest extends AndroidTestCase {
+import static org.junit.Assert.assertEquals;
+
+public class JiraIssueCategoryTest {
 
 	private static final double thresholdGreen = 2.0;
 	private static final double thresholdYellow = 4.0;
 
+	@Test
 	public void testGreenCategory() {
 		testCategory(JiraIssueCategory.GREEN, 1);
 		testCategory(JiraIssueCategory.GREEN, 2);
 	}
 
+	@Test
 	public void testYellowCategory() {
 		testCategory(JiraIssueCategory.YELLOW, 3);
 		testCategory(JiraIssueCategory.YELLOW, 4);
 	}
 
+	@Test
 	public void testRedCategory() {
 		testCategory(JiraIssueCategory.RED, 5);
 	}

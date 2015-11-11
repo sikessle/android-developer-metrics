@@ -1,15 +1,21 @@
 package de.htwg.ticketqualitymonitor.model;
 
-import android.test.AndroidTestCase;
 import android.util.Base64;
-
 import com.android.volley.RequestQueue;
-import com.android.volley.Response.Listener;
 import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
-public class JiraApiTest extends AndroidTestCase {
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
+
+@RunWith(RobolectricTestRunner.class)
+public class JiraApiTest {
 
 	private static final String URI_SUFFIX = "rest/api/2/";
 	private static final String USER = "user";
@@ -17,36 +23,40 @@ public class JiraApiTest extends AndroidTestCase {
 	private boolean listenerCalled;
 
 	private RequestQueue createQueue() {
-		return Volley.newRequestQueue(getContext());
+        return Volley.newRequestQueue(RuntimeEnvironment.application);
 	}
 
+    @Test
 	public void testValidConstructorArgs() {
 		final String uri = "http://localhost/";
 		final JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
 
-		assertEquals(uri + URI_SUFFIX, api.getUri());
-		assertEquals(USER, api.getUser());
-		assertEquals(PASS, api.getPass());
+        assertThat(uri + URI_SUFFIX, is(api.getUri()));
+        assertThat(USER, is(api.getUser()));
+        assertThat(PASS, is(api.getPass()));
 	}
 
+    @Test
 	public void testMissingTrailingSlash() {
 		final String uri = "http://localhost";
 		final JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
 
-		assertEquals(uri + "/" + URI_SUFFIX, api.getUri());
+        assertThat(uri + "/" + URI_SUFFIX, is(api.getUri()));
 	}
 
+    @Test
 	public void testMissingLeadingHttp() {
 		final String uri = "localhost/";
 		final JiraApi api = new JiraApi(uri, USER, PASS, createQueue());
 
-		assertEquals("http://" + uri + URI_SUFFIX, api.getUri());
+        assertThat("http://" + uri + URI_SUFFIX, is(api.getUri()));
 	}
 
 	private void setListenerCalled(boolean value) {
 		listenerCalled = value;
 	}
 
+    @Test
 	public void testGetRequestWithCredentials() throws Exception {
 		final String uri = "http://localhost/";
 		final String resource = "res";
@@ -63,11 +73,12 @@ public class JiraApiTest extends AndroidTestCase {
 				+ Base64.encodeToString(userPass.getBytes("UTF-8"),
 						Base64.NO_WRAP);
 
-		assertEquals(expectedCredentials,
-				request.getHeaders().get("Authorization"));
-		assertEquals(uri + URI_SUFFIX + resource, request.getUrl());
+        assertThat(expectedCredentials,
+                is(request.getHeaders().get("Authorization")));
+        assertThat(uri + URI_SUFFIX + resource, is(request.getUrl()));
 	}
 
+    @Test
 	public void testGetRequestListener() {
 		final String uri = "http://localhost/";
 		final String expectedResponse = "resp";

@@ -1,14 +1,18 @@
 package de.htwg.ticketqualitymonitor.model;
 
+import com.android.volley.Response.Listener;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.List;
 
-import android.test.AndroidTestCase;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
-import com.android.volley.Response.Listener;
+public class JqlIssueListenerTest {
 
-public class JqlIssueListenerTest extends AndroidTestCase {
-
+	@Test
 	public void testGetIssues() throws NoSuchFieldException,
 			IllegalAccessException, IllegalArgumentException {
 		final JqlObject expectedJqlObject = new JqlObject();
@@ -34,7 +38,7 @@ public class JqlIssueListenerTest extends AndroidTestCase {
 		public void onResponse(JiraIssue[] issues) {
 			final List<JiraIssue> actualIssues = Arrays.asList(issues);
 
-			assertEquals(expectedIssues, actualIssues);
+			assertThat(expectedIssues, is(actualIssues));
 		}
 
 	}
